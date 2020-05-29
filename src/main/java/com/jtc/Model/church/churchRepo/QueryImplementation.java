@@ -608,10 +608,10 @@ public boolean displaySerialName(String memberId)
     public boolean getCurrentTime(String id)
     {
         String ans = "";
-        String sql = "Select resent from member where id = ?";
+        String sql = "Select id from Workers_Login where id = ?";
         try {
            ans =  jdbcTemplate.queryForObject(sql, (rs, numRow) ->
-                    new String(rs.getString("resent")), id);
+                    new String(rs.getString("id")), id);
            if (ans.equalsIgnoreCase(id))
            {
                return true;

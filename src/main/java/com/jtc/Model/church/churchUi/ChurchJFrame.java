@@ -946,13 +946,17 @@ class SundayActivityDialog extends JDialog {
                             else {
                                 churchService.updateCurrentDateInfo(dateString, name);
                                 churchService.updateAttendanceOfMembers(name);
-                           //     if (!churchService.getCurrentTime(name))
-
-                                //    churchService.updateWorkerAttendance(loginTimeWorker,name);
-                            //    {
-                                  //  String member_status = churchService.getAttendanceIdMember(name);
-                                  //  churchService.addWorkerAttendance(new WorkersLogin(name, loginTimeWorker, , dateString));
-                                //}
+                                System.out.println(churchService.getCurrentTime(name));
+                                if (!churchService.getCurrentTime(name))
+                                {
+                                    System.out.println(churchService.getCurrentTime(name));
+                                   int added= churchService.addWorkerAttendance(new WorkersLogin(name, loginTimeWorker,"NONWORKER" , dateString));
+                                    System.out.println(added);
+                                }
+                                else{
+                                    String member_status = churchService.getAttendanceIdMember(name);
+                                    churchService.updateWorkerAttendance(loginTimeWorker,name);
+                                }
                                 churchService.doLoginTmeUpdate(name, loginTimeWorker, dateString);
                                 churchService.updateAttendance(name);
                                 churchService.updateInchurchValue(name);
