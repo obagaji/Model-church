@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.jtc</groupId>
-	<artifactId>Assimilation-model-Application</artifactId>
+	<artifactId>Assimilation-Application</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Assimilation-model-Application</name>
+	<name>Assimilation-Application</name>
 	<description>Operational Application for Church </description>
 	<properties>
 		<java.version>17</java.version>
