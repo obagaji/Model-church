@@ -34,7 +34,8 @@ import java.util.List;
 /*
 * The springframework stereotype annotation will help spring to pick the class and includes it by generating a bean for it.
 * Since the application is a desktop application we have to extends the JFrame class to be able to make use of the feature available.
-*  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
+*
+*
 * */
 @Service
  public class ChurchJFrame extends JFrame {
