@@ -16,12 +16,9 @@ import lombok.NoArgsConstructor;
 public class NonWorker {
 
     @Id
-  //  @GeneratedValue
     private String nonWorkerId;
     private String joinDate;
- /*   @OneToOne(cascade = CascadeType.ALL,mappedBy = "nonworker")
-    private Member member;
-*/
+
 
 
 }

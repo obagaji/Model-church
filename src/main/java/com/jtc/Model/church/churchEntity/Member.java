@@ -1,7 +1,11 @@
 package com.jtc.Model.church.churchEntity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+
+import java.sql.Blob;
 //import org.springframework.data.annotation.Id;
 
 
@@ -19,17 +23,16 @@ public class Member {
         private String address;
         private String dateBorn;
         private String phone;
-        private String marry;
-        private String emailAddress;
-        private Integer attendance;
-       // private int total = 0;
-       private String loginDate;
-       private String  inChurch;
+        private String status;
+        private int attendance;
+       private String registerDate;
        private String resent;
+    @Column(name="member_photo",unique = true)
+    private String memberPhoto;
 
     public Member(String id, String sex, String lastName, String firstName, String address, String dateBorn, String phone,
-                  String marry, String emailAddress, Integer attendance, String loginDate, String inChurch,
-                  String resent) {
+                  String status,int attendance, String registerDate,
+                  String resent, String memberPhoto) {
         this.id = id;
         this.sex = sex;
         this.lastName = lastName;
@@ -37,17 +40,15 @@ public class Member {
         this.address = address;
         this.dateBorn = dateBorn;
         this.phone = phone;
-        this.marry = marry;
-        this.emailAddress = emailAddress;
+        this.status = status;
+        this.memberPhoto = memberPhoto;
         this.attendance = attendance;
-        this.loginDate = loginDate;
-        this.inChurch = inChurch;
+        this.registerDate = registerDate;
         this.resent = resent;
     }
 
     public Member() {
         }
-
         public Member(String i) {
             this.setId(i);
         }
@@ -56,22 +57,13 @@ public class Member {
         this.attendance = attendance;
     }
 
-/*    public NonWorker getNonworker() {
-        return nonworker;
+    public String getMemberPhoto() {
+        return memberPhoto;
     }
 
-    public void setNonworker(NonWorker nonworker) {
-        this.nonworker = nonworker;
-    }*/
-
-    public String getEmailAddress() {
-        return emailAddress;
+    public void setMemberPhoto(String memberPhoto) {
+        this.memberPhoto = memberPhoto;
     }
-
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
-
     public String getResent() {
         return resent;
     }
@@ -80,22 +72,13 @@ public class Member {
         this.resent = resent;
     }
 
-    public String getLoginDate() {
-        return loginDate;
+    public String getRegisterDate() {
+        return registerDate;
     }
 
-    public void setLoginDate(String loginDate) {
-        this.loginDate = loginDate;
+    public void setRegisterDate(String loginDate) {
+        this.registerDate = registerDate;
     }
-
-    public String getInChurch() {
-        return inChurch;
-    }
-
-    public void setInChurch(String inChurch) {
-        this.inChurch = inChurch;
-    }
-
     public String getId() {
         return id;
     }
@@ -127,12 +110,12 @@ public class Member {
         this.firstName = firstName;
     }
 
-    public String getMarry() {
-        return marry;
+    public String getStatus() {
+        return status;
     }
 
-    public void setMarry(String marry) {
-        this.marry = marry;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getAddress() {
@@ -145,7 +128,6 @@ public class Member {
     public String getPhone() {
         return phone;
     }
-
     public void setPhone(String phone) {
         this.phone = phone;
     }
@@ -153,25 +135,16 @@ public class Member {
     public String getDateBorn() {
         return dateBorn;
     }
-
     public void setDateBorn(String dateBorn) {
         this.dateBorn = dateBorn;
     }
-/*
-    public String getemailAddress() {
-        return emailAddress;
-    }
-
-    public void setemailAddress(String eAddress) {
-        this.emailAddress = emailAddress;
-    }*/
 
     public int getAttendance() {
         return attendance;
     }
 
     public void setAttendance(int attendance) {
-        this.attendance = 1 + attendance;
+        this.attendance =  attendance;
     }
 
 }

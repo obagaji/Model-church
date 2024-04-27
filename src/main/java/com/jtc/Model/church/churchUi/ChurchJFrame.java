@@ -1,29 +1,29 @@
 package com.jtc.Model.church.churchUi;
-
 /**
  *
  * @author Musa Daniel
  * @author JTC CONTRACTS SERVICE NIGERIA LIMITED
  * @version 1.2
  */
-
-
 import com.jtc.Model.church.churchEntity.*;
 import com.jtc.Model.church.churchRepo.QueryImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.swing.*;
 import javax.swing.JTable.PrintMode;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -49,7 +49,7 @@ import java.util.List;
     private JTextField phoneNum;
     private JTextField names;
     private JMenuItem Edit, Allpeople, Name, addWork, newMenu, Delete, Login, display, WorkerItem, NonWorkerItem,
-            attendans, WAttendance, MAttendance, official, us;
+            attendans, WAttendance, MAttendance, official,reset, us;
     private JMenuItem TotalActivity, locateActivity, account, exit;
     private JMenuItem firstTimeResponse;
     private JMenuItem firstTime;
@@ -92,14 +92,16 @@ import java.util.List;
     private static JList<String> LISTAREA;
     private static JPasswordField TEXTPASSWORD;
 
-    private DefaultTableModel defaultTableModel;
+//    private ImageDisplayClass imageDisplayClass;
 
     @Autowired
     QueryImplementation churchService;
+    private ImageRendererClass imageRendererClass;
 
     private NonWorker nonWorker;
     private Member member;
     private Workers dataWorkers;
+    private DateClass dateClass;
 
     public ChurchJFrame()  {
         super("                                  RCCG NEW CONVENENT MODEL PARISH         ");
@@ -129,7 +131,7 @@ import java.util.List;
         StaffOfice.setMnemonic('S');
         Name = new JMenuItem("NAME");
         Name.setMnemonic('N');
-        menu.add(Name);
+      //  menu.add(Name);
         menu.addSeparator();
         Edit = new JMenuItem("EDIT");
         Edit.setMnemonic('E');
@@ -163,9 +165,9 @@ import java.util.List;
         searchMenu.setText("LOGIN");
         searchMenu.setFont(font);
         exit = new JMenuItem("EXIT");
-        searchMenu.setIcon(new javax.swing.ImageIcon("src/main/java/com/jtc/Model/church/rccgsmall.jpg"));
+        searchMenu.setIcon(new javax.swing.ImageIcon("C:\\church\\rccgsmall.jpg"));
         searchMenu.addSeparator();
-        DONLabel.setIcon(new javax.swing.ImageIcon("src/main/java/com/jtc/Model/church/NCMP1.jpg"));
+        DONLabel.setIcon(new javax.swing.ImageIcon("C:\\church\\NCMP1.jpg"));
         DONLabel.setHorizontalAlignment(0);
         DONLabel.setIgnoreRepaint(true);
         Login = new JMenuItem("LOGIN");
@@ -175,6 +177,9 @@ import java.util.List;
         display = new JMenuItem("DISPLAY BIRTHDAY");
         display.setMnemonic('D');
         searchMenu.add(display);
+        searchMenu.addSeparator();
+        reset = new JMenuItem("RESET");
+        searchMenu.add(reset);
         searchMenu.addSeparator();
         searchMenu.add(exit);
         bar.add(searchMenu);
@@ -201,6 +206,8 @@ import java.util.List;
         menu.add(locateActivity);
         account = new JMenuItem("MAINTENENCE");
         attendanceG.add(attendans);
+        attendanceG.addSeparator();
+        attendanceG.add(MAttendance);
         addWork = new JMenuItem(" ADD WORKER");
         addWork.setMnemonic('A');
         admin.add(addWork);
@@ -235,12 +242,12 @@ import java.util.List;
                 dispose();
             }
         });
-        Name.addActionListener(new ActionListener() {
+     /*   Name.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 SearchDialog searching = new SearchDialog((JFrame) null);
                 searching.setVisible(true);
             }
-        });
+        });*/
          locateActivity.addActionListener(new ActionListener() {
              public void actionPerformed(ActionEvent event) {
                  DateChurchAttendanceDialog Jrame = new DateChurchAttendanceDialog((JFrame) null);
@@ -289,6 +296,15 @@ import java.util.List;
                 del.setVisible(true);
             }
         });
+        reset.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                for (DateClass dateClass1: churchService.getAllDateClass())
+                {
+                    churchService.updateAllDateClass(dateClass1.getIdMember());
+                }
+                JOptionPane.showMessageDialog(null,"OK","RESET",JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
         TotalActivity.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 SundayActivityDialog frame = new SundayActivityDialog((JFrame) null);
@@ -298,6 +314,12 @@ import java.util.List;
         attendans.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Attendance tend = new Attendance((JFrame) null);
+                tend.setVisible(true);
+            }
+        });
+        MAttendance.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                DateAttendanceMemberDialog tend = new DateAttendanceMemberDialog((JFrame) null);
                 tend.setVisible(true);
             }
         });
@@ -317,7 +339,20 @@ import java.util.List;
             LogDialog lin = new LogDialog((JFrame) null);
             lin.setVisible(true);
         });
-        NonWorkerItem.addActionListener(e -> {
+    /*    reset.addActionListener(e->{
+            // this section of the code is to help set all the dataclass entity value of out church to absence. the current date
+// information is used and a comparism is made to make sure this code is not called whenever the application is run.
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-YYYY");
+            String checkDate = dateFormat.format(new Date());
+       // dateClass = new DateClass();
+       // dateClass = churchService.findDateExist(checkDate);
+
+        if (!checkDate.equalsIgnoreCase(churchService.findDateExist(checkDate).getClassDate()))
+        {
+            churchService.setAllMemberToAbsent(checkDate);
+        }
+        });
+    */    NonWorkerItem.addActionListener(e -> {
             NonDialog non = new NonDialog((JFrame) null);
             non.setVisible(true);
         });
@@ -346,31 +381,27 @@ import java.util.List;
         var10004 = font;
         font = new Font("SansSerif", 2, 18);
         welcomeLabel.setFont(font);
-        welcomeLabel.setText("                                        \n RCCG      \n NEW COVENANT      \n   MODEL     PARISH        ");
+        welcomeLabel.setText("                                        \n RCCG      \n NEW     COVENANT      \n   MODEL     PARISH        ");
         add(welcomeLabel, "South");
         add(DONLabel, "Center");
         add(displayL, "North");
-        //       churchService = new QueryImplementation();
         setDefaultCloseOperation(3);
         setSize(1600, 1000);
         setVisible(true);
     }
-
     public void createPhoneTxtFile(String[] phone) {
         Filephone writer = new Filephone();
         writer.writeUsingBufferedWriter(phone);
     }
-
     static {
         LISTSTREET = new JList(ARRAYLIST.toArray());
         LISTAREA = new JList(LOCALARRAY.toArray());
+        JTable jTable;
         TEXTPASSWORD = new JPasswordField(10);
     }
-
     private class TimerClass implements ActionListener {
         private TimerClass() {
         }
-
         public void actionPerformed(ActionEvent action) {
             display1.setText("");
             display2.setText("");
@@ -378,24 +409,18 @@ import java.util.List;
             displayL.setText("");
         }
     }
-
     private class ImageTimer {
         private int indexPostion;
-
         private ImageTimer() {
-
         }
-
         public int ArrayLocationIndex(int index) {
             return indexPostion = index;
         }
     }
-
     class DelDialog extends JDialog {
         private JPanel pan;
         private JPanel pan2;
-        private JTextField delField;
-
+        private JLabel delField;
         public DelDialog(JFrame delFrame) {
             super(delFrame, "  DELETE   ", true);
             setLayout(new BorderLayout());
@@ -404,16 +429,16 @@ import java.util.List;
             pan2.setLayout(new FlowLayout());
             pan.setLayout(new FlowLayout());
             pan.setBorder(BorderFactory.createTitledBorder(""));
-            JLabel delFirst = new JLabel("     SURNAME");
+            JLabel delFirst = new JLabel("     ");
             pan.add(delFirst);
-            delField = new JTextField(15);
+            delField = new JLabel(       "");
             pan.add(delField);
             JLabel delSecond = new JLabel("     ID Number");
             pan.add(delSecond);
             delsfield = new JTextField(15);
             pan.add(delsfield);
             JButton subm = new JButton("SUBMIT");
-            subm.setIcon(new javax.swing.ImageIcon("src/main/java/com/jtc/Model/church/windows-error.png"));
+            subm.setIcon(new javax.swing.ImageIcon("C:\\church\\windows-error.png"));
             pan2.add(subm);
             JButton canc = new JButton("CANCEL");
             add(pan, "Center");
@@ -422,11 +447,13 @@ import java.util.List;
             subm.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     if (value.equalsIgnoreCase("Member")) {
-                        churchService.deleteNonMember(delsfield.getText());
+                        churchService.deleteMember(delsfield.getText());
                         JOptionPane.showMessageDialog((Component) null, "OERATION  SUCCESSFUL");
+                        delsfield.setText(" ");
                     } else if (value.equalsIgnoreCase("worker")) {
                         churchService.deleteWorker(delsfield.getText());
                         JOptionPane.showMessageDialog((Component) null, "OERATION  SUCCESSFUL");
+                        delsfield.setText(" ");
                     }
                 }
             });
@@ -439,14 +466,12 @@ import java.util.List;
             setLocation(300, 350);
         }
     }
-
-
     class MemberDialog extends JDialog {
         private JPanel pan;
-        private JLabel workerStreetLabel;
-        private JLabel workerEmail;
-        private JTextField streetField;
-        private JTextField emailField;
+        private final JLabel workerStreetLabel;
+        private final JButton workerEmail;
+        private final JTextField streetField;
+        private final JTextField emailField;
         private JComboBox workerStatus;
         private JComboBox workerSex;
         private String[] sex = new String[]{"CHOOSE", "MALE", "FEMALE"};
@@ -457,11 +482,10 @@ import java.util.List;
         private int present = 1;
         private int absent = 0;
         private String start = "Yes";
-
+        private DateClass dateClass;
         public MemberDialog(final JFrame memFrame) {
             super(memFrame, "    ADD MEMBERSHIP          ", true);
             setLayout(new BorderLayout());
-            //    churchService = new ChurchService();
             pan = new JPanel();
             pan.setBorder(BorderFactory.createTitledBorder(""));
             pan.setLayout(new GridLayout(10, 2, 5, 5));
@@ -494,7 +518,7 @@ import java.util.List;
             streetField = new JTextField(15);
             streetField.enable(false);
             streetField.enableInputMethods(false);
-            workerEmail = new JLabel("          EMAIL");
+            workerEmail = new JButton("          MEMBER PHOTO");
             emailField = new JTextField(20);
 
             workerPlabel.setBorder(BorderFactory.createTitledBorder(""));
@@ -507,7 +531,7 @@ import java.util.List;
             workerStatusLabel.setBorder(BorderFactory.createTitledBorder(""));
 
             JButton sub = new JButton("SUBMIT");
-            sub.setIcon(new javax.swing.ImageIcon("src/main/java/com/jtc/Model/church/Save16.gif"));
+            sub.setIcon(new javax.swing.ImageIcon("C:\\church\\Save16.gif"));
             JButton cant = new JButton("CANCEL");
             pan.add(workerFlabel);
             pan.add(workerffield);
@@ -534,6 +558,27 @@ import java.util.List;
             workerIdfield.setText("NC");
             workerIdfield.setEditable(true);
             add(pan, "Center");
+
+            workerEmail.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JFileChooser jFileChooser = new JFileChooser();
+                    jFileChooser.setFileSelectionMode(JFileChooser.APPROVE_OPTION);
+                    int result = jFileChooser.showOpenDialog(null);
+                    if (result==JFileChooser.CANCEL_OPTION)
+                    {
+                        System.exit(1);
+                    }
+                    File file = jFileChooser.getSelectedFile();
+                    if((file==null) || file.getName().equals(""))
+                    {
+                        JOptionPane.showMessageDialog(null, "Invalid Name","Invalid Name"
+                                ,JOptionPane.ERROR_MESSAGE);
+                    }
+                    emailField.setText(file.getAbsolutePath());
+
+                }
+            });
             workerDlabel.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     DatePicker pickDate = new DatePicker(memFrame);
@@ -554,7 +599,6 @@ import java.util.List;
                     if (event.getStateChange() == 1) {
                         mf = sex[workerSex.getSelectedIndex()];// for the sex field. the variable mf is used
                     }
-
                 }
             });
             sub.addActionListener(new ActionListener() {
@@ -563,14 +607,18 @@ import java.util.List;
                     DateFormat dateFormat = new SimpleDateFormat("dd-MM-YYYY");
                     String loginDates = dateFormat.format(new Date());
                     member = new Member(workerIdfield.getText(), mf, workerffield.getText(), workerFirstfield.getText(),
-                            workerAfield.getText(),formatedDate,workerPfield.getText(),   sm, emailField.getText(),
-                            1, loginDates, "PRESENT", loginDates);
+                            workerAfield.getText(),formatedDate,workerPfield.getText(),   sm,
+                            1, loginDates, loginDates, emailField.getText());
                     String stringID = workerIdfield.getText();
-
-                    if (!churchService.findByIdValue(stringID)) {
+/*
+                    List<Member> compareMember = new ArrayList<>();
+                    compareMember = churchService.findByIdValue(stringID);*/
+                    if (!churchService.displayName(name)) {
                         nonWorker = new NonWorker(stringID, loginDates);
-                        churchService.addMemberInfo(member);
+                       int x = churchService.addMemberInfo(member);
                         churchService.addNonWorkers(nonWorker);
+                        dateClass = new DateClass(stringID,loginDates, "PRESENT");
+                        churchService.addDateClass( dateClass);
 
                     } else {
                         JOptionPane.showMessageDialog((Component) null, "YOU ARE REGISTERED");
@@ -593,8 +641,6 @@ import java.util.List;
                     workerPfield.setEditable(true);
                     workerFirstfield.setEditable(true);
                     //streetField.setEditable(true);
-                    emailField.setEditable(true);
-
                 }
             });
             cant.addActionListener(new ActionListener() {
@@ -657,19 +703,6 @@ import java.util.List;
                 }
             });
 
-            // To Do List
-            // this listener will have to be moved
-            /*depart.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    resultTable = new JTable(churchService);
-                    add(new JScrollPane(resultTable), "Center");
-                    TableRowSorter<TableModel> sorter = new TableRowSorter(churchService);
-                    resultTable.setRowSorter(sorter);
-                    churchService.findAllDepartment();
-                    setSize(1000, 600);
-                    setLocation(50, 80);
-                }
-            });*/
             print.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event) {
                     MessageFormat headerFormat = new MessageFormat("");
@@ -710,7 +743,7 @@ import java.util.List;
             workers = new JPanel();
             workers.setLayout(new FlowLayout());
             submit = new JButton("SUBMIT");
-            submit.setIcon(new javax.swing.ImageIcon("src/main/java/com/jtc/Model/church/Save16.gif"));
+            submit.setIcon(new javax.swing.ImageIcon("C:\\church\\Save16.gif"));
             close = new JButton("CLOSE");
             departLabel.setBorder(BorderFactory.createTitledBorder(""));
             depart2Label.setBorder(BorderFactory.createTitledBorder(""));
@@ -786,7 +819,7 @@ import java.util.List;
         private DatePicker pickDate;
 
         public Attendance(final JFrame frame) {
-            super(frame, "          VIEW  ATTENDANCE PRESENT IN CHURCH       ", null);
+            super(frame, "      VIEW  ATTENDANCE PRESENT/ ABSENCE IN CHURCH       ", null);
             setLayout(new BorderLayout());
             panel = new JPanel();
             //locat = new JButton("  ENTER DATE");
@@ -801,7 +834,7 @@ import java.util.List;
             print = new JButton("PRINT");
             //   panel.add(locat);
 
-            panel.add(new JLabel(" PRESENT"));
+            panel.add(new JLabel(" PRESENT/ABSENCE"));
             panel.add(dateText);
             panel.add(submit);
             //panel.add(close);
@@ -810,7 +843,8 @@ import java.util.List;
             submit.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event) {
                     if (dateText.getText() != null || !dateText.getText().equalsIgnoreCase("")) {
-                        churchService.selectInOrOutSunday(dateText.getText());
+                    //    if(dateText.getText().equalsIgnoreCase("presence"))
+                        churchService.selectOutSunday(dateText.getText());
                         resultTable = new JTable(churchService);
                         add(new JScrollPane(resultTable), "Center");
                         TableRowSorter<TableModel> sorter = new TableRowSorter(churchService);
@@ -825,15 +859,14 @@ import java.util.List;
                 public void actionPerformed(ActionEvent event) {
                     MessageFormat headerFormat = new MessageFormat("");
                     MessageFormat footerFormat = new MessageFormat("Page-{0}");
-
                     try {
-                        resultTable.print(PrintMode.FIT_WIDTH, headerFormat, footerFormat, true, null, true);
+                        resultTable.print(PrintMode.FIT_WIDTH, headerFormat, footerFormat,
+                                true, null, true);
                     } catch (HeadlessException sql) {
                         sql.printStackTrace();
                     } catch (PrinterException sql) {
                         sql.printStackTrace();
                     }
-
                 }
             });
             setSize(500, 100);
@@ -842,7 +875,7 @@ import java.util.List;
     }
 
     class LogDialog extends JDialog {
-        private Login attendanceLogin;
+
         private Member displayNames;
 
         public LogDialog(JFrame Lframe) {
@@ -859,7 +892,7 @@ import java.util.List;
             display2 = new JLabel("");
             display3 = new JLabel("");
             pane.setLayout(new BorderLayout());
-            log.setIcon(new javax.swing.ImageIcon("src/main/java/com/jtc/Model/church/rccgsmall.jpg"));
+            log.setIcon(new javax.swing.ImageIcon("C:\\church\\rccgsmall.jpg"));
             showPanel.add(display1);
             showPanel.add(display2);
             showPanel.add(display3);
@@ -886,49 +919,66 @@ import java.util.List;
                     String dateString = dt.format(new Date());
                     name = lofield.getText().trim();// name here is the login id of the user.
                     try {
-                        Login attendanceLogin = new Login(name, dateString);
-                        if (attendanceLogin.logName()) {
+
+                        List<Member> checkMember = new ArrayList<>() ;
+                        checkMember = churchService.findByIdValue(name);
+                        System.out.println(checkMember.get(0).getResent() + " checking");
+
+                        if (!churchService.displayName(name)) {
+                            if (churchService.getCurrentDate(name).equalsIgnoreCase(dateString))
+                            {
+                                JOptionPane.showMessageDialog(null, "You have Logged In Before");
+                            }
+                            //  logMember = true;
+                            else// if (!churchService.getCurrentDate(nameId).equalsIgnoreCase(dateString))
+                            {
+                                churchService.updateCurrentDateInfo(dateString,name);
+                                churchService.updateAttendanceOfMembers(name);
+                                churchService.updateAttendance(name);
+                                churchService.updateInchurchValue(name);
+                                lofield.setText("");
+                                if (animationTimer == null) {
+                                    //  try {
+
+                                    displayNames = checkMember.get(0);
+                         /*} catch (NoValueFound ex) {
+                             throw new RuntimeException(ex);
+                         }*/
+
+                                    if (displayNames != null) {
+                                        display1.setText(displayNames.getFirstName());
+                                        display2.setText(displayNames.getLastName());
+                                    }
+                                    display3.setText("");
+                                    displayL.setFont(new Font("Serif", 1, 36));
+                                    displayL.setText("WELCOME TO RCCG NEW CONVENENT MODEL PARISH");
+                                    animationTimer = new Timer(1500, new TimerClass());
+                                    animationTimer.start();
+                                } else if (animationTimer.isRunning()) {
+                                    //   try {
+                                    displayNames = checkMember.get(0);
+                         /*} catch (NoValueFound ex) {
+                             throw new RuntimeException(ex);
+                         }*/
+                                    if (displayNames != null) {
+                                        display1.setText(displayNames.getFirstName());
+                                        display2.setText(displayNames.getLastName());
+                                    }
+                                    display3.setText("");
+                                    displayL.setFont(new Font("Serif", 1, 36));
+                                    displayL.setText("WELCOME TO RCCG NEW CONVENENT MODEL PARISH");
+                                    animationTimer.restart();
+                                }
+                            }
                         }
 // search the data base if the id of the user exist
-                        else if (!churchService.findByIdValue(name)) {
+                        else  {
                             JOptionPane.showMessageDialog((Component) null, "User Not Registered   : Please Register");
                         }
                     } catch (IllegalStateException sql) {
                         sql.toString();
                     }
-                    lofield.setText("");
-                    if (animationTimer == null) {
-                        //  try {
 
-                        displayNames = churchService.displayMethod(name);
-                         /*} catch (NoValueFound ex) {
-                             throw new RuntimeException(ex);
-                         }*/
-
-                        if (displayNames != null) {
-                            display1.setText(displayNames.getFirstName());
-                            display2.setText(displayNames.getLastName());
-                        }
-                        display3.setText("");
-                        displayL.setFont(new Font("Serif", 1, 36));
-                        displayL.setText("WELCOME TO RCCG NEW CONVENENT MODEL PARISH");
-                        animationTimer = new Timer(1500, new TimerClass());
-                        animationTimer.start();
-                    } else if (animationTimer.isRunning()) {
-                        //   try {
-                        displayNames = churchService.displayMethod(name);
-                         /*} catch (NoValueFound ex) {
-                             throw new RuntimeException(ex);
-                         }*/
-                        if (displayNames != null) {
-                            display1.setText(displayNames.getFirstName());
-                            display2.setText(displayNames.getLastName());
-                        }
-                        display3.setText("");
-                        displayL.setFont(new Font("Serif", 1, 36));
-                        displayL.setText("WELCOME TO RCCG NEW CONVENENT MODEL PARISH");
-                        animationTimer.restart();
-                    }
                 }
             });
             lofield.addKeyListener(new KeyAdapter() {
@@ -938,10 +988,55 @@ import java.util.List;
                         String dateString = dt.format(new Date());
                         name = lofield.getText();
                         try {
-                            Login attendanceLogin = new Login(name, dateString);
-                            if (attendanceLogin.logName()) {
+                            List<Member> checkMember = new ArrayList<>() ;
+                            checkMember = churchService.findByIdValue(name);
+
+                                if (!churchService.displayName(name)) {
+                                    if (churchService.getCurrentDate(name).equalsIgnoreCase(dateString))
+                                {
+                                    JOptionPane.showMessageDialog(null, "You have Logged In Before");
+                                }
+
+                                else// if (!churchService.getCurrentDate(nameId).equalsIgnoreCase(dateString))
+                                {
+                                    churchService.updateCurrentDateInfo(dateString,name);
+                                    churchService.updateAttendanceOfMembers(name);
+                                    churchService.updateAttendance(name);
+                                    lofield.setText("");
+                                    if (animationTimer == null) {
+                                        //  try {
+                                        displayNames = checkMember.get(0);
+                             /*} catch (NoValueFound ex) {
+                                 throw new RuntimeException(ex);
+                             }*/
+                                        if (displayNames != null) {
+                                            display1.setText(displayNames.getFirstName());
+                                            display2.setText(displayNames.getLastName());
+                                        }
+                                        display3.setText("");
+                                        displayL.setFont(new Font("Serif", 1, 36));
+                                        displayL.setText("WELCOME TO RCCG NEW CONVENENT MODEL PARISH");
+                                        animationTimer = new Timer(1500, new TimerClass());
+                                        animationTimer.start();
+
+                                    } else if (animationTimer.isRunning()) {
+                                        //   try {
+                                        displayNames = checkMember.get(0);
+                             /*} catch (NoValueFound ex) {
+                                 throw new RuntimeException(ex);
+                             }*/
+                                        if (displayNames != null) {
+                                            display1.setText(displayNames.getFirstName());
+                                            display2.setText(displayNames.getLastName());
+                                        }
+                                        display3.setText("");
+                                        displayL.setFont(new Font("Serif", 1, 36));
+                                        displayL.setText("WELCOME TO RCCG NEW CONVENENT MODEL PARISH");
+                                        animationTimer.restart();
+                                    }
+                                }
                             }
-                            else if (!churchService.findByIdValue(name))
+                            else
                             {
                                 JOptionPane.showMessageDialog(null, "User Not Registered  : Please Register ");
                             }/* else if (!churchService.getName(name)) {
@@ -951,38 +1046,6 @@ import java.util.List;
                             sql.toString();
                         }
 
-                        lofield.setText("");
-                        if (animationTimer == null) {
-                            //  try {
-                            displayNames = churchService.displayMethod(name);
-                             /*} catch (NoValueFound ex) {
-                                 throw new RuntimeException(ex);
-                             }*/
-                            if (displayNames != null) {
-                                display1.setText(displayNames.getFirstName());
-                                display2.setText(displayNames.getLastName());
-                            }
-                            display3.setText("");
-                            displayL.setFont(new Font("Serif", 1, 36));
-                            displayL.setText("WELCOME TO RCCG NEW CONVENENT MODEL PARISH");
-                            animationTimer = new Timer(1500, new TimerClass());
-                            animationTimer.start();
-
-                        } else if (animationTimer.isRunning()) {
-                            //   try {
-                            displayNames = churchService.displayMethod(name);
-                             /*} catch (NoValueFound ex) {
-                                 throw new RuntimeException(ex);
-                             }*/
-                            if (displayNames != null) {
-                                display1.setText(displayNames.getFirstName());
-                                display2.setText(displayNames.getLastName());
-                            }
-                            display3.setText("");
-                            displayL.setFont(new Font("Serif", 1, 36));
-                            displayL.setText("WELCOME TO RCCG NEW CONVENENT MODEL PARISH");
-                            animationTimer.restart();
-                        }
                     }
 
                 }
@@ -1028,7 +1091,7 @@ import java.util.List;
             pho = new JLabel("              PHONE");
             idNumberLabel = new JLabel("              ID NUMBER");
             datebirthLabel = new JLabel("              MONTH OF BIRTH");
-            emailLabel = new JLabel("              EMAIL");
+            emailLabel = new JLabel("              ");
             sexLabel = new JLabel("              SEX");
             ffield = new JTextField(15);
             panel.add(firstName);
@@ -1059,7 +1122,7 @@ import java.util.List;
             enter.add(idfield);
             enter.add(new JLabel(""));
             enter.add(searchButton);
-            submit.setIcon(new javax.swing.ImageIcon("src/main/java/com/jtc/Model/church/Save16.gif"));
+            submit.setIcon(new javax.swing.ImageIcon("C:\\church\\Save16.gif"));
             add(panel, "Center");
             add(enter, "South");
             searchButton.addActionListener(new ActionListener() {
@@ -1075,7 +1138,7 @@ import java.util.List;
                         ffield.setEditable(true);
                         name1.setText(searchMember.getLastName());
                         name1.setEditable(true);
-                        sfield.setText(searchMember.getMarry());
+                        sfield.setText(searchMember.getStatus());
                         sfield.setEditable(true);
                         Adfield.setText(searchMember.getAddress());
                         Adfield.setEditable(true);
@@ -1085,8 +1148,8 @@ import java.util.List;
                         // street.setEditable(true);
                         sex.setText(searchMember.getSex());
                         sex.setEditable(true);
-                        emailAdress.setText(searchMember.getEmailAddress());
-                        emailAdress.setEditable(true);
+                        emailAdress.setText("");
+                        emailAdress.setEditable(false);
                         datebirth.setText(searchMember.getDateBorn());
                         datebirth.setEditable(true);
                     } else {
@@ -1147,8 +1210,10 @@ import java.util.List;
         private JPanel panel, display, total;
         private JLabel otherN;
         private JLabel sunN;
-        private JTextField surField;
-
+        private JLabel surField;
+        private Object[][] searchObjects;
+        private String [] columnSearch;
+        private JLabel image = new JLabel();
         public SearchDialog(JFrame parent) {
             super(parent, "                 SEARCH BY NAME OR ID NUMBER              ", null);
             setLayout(new BorderLayout());
@@ -1160,18 +1225,18 @@ import java.util.List;
             display.setLayout(new GridLayout(3, 2, 3, 1));
             display.setBorder(BorderFactory.createTitledBorder(""));
             panel.setLayout(new FlowLayout());
-            name1Label.setText("     LASTNAME");
-            surField = new JTextField();
-            sunN = new JLabel("      FIRSTNAME");
+            name1Label.setText("     FIRSTNAME");
+            surField = new JLabel();
+            sunN = new JLabel("      ");
             firstField = new JTextField();
-            display.add(name1Label);
-            display.add(firstField);
             display.add(sunN);
             display.add(surField);
+            display.add(name1Label);
+            display.add(firstField);
             loginLabel = new JLabel();
             loginLabel.setText("     ID NUMBER");
             display.add(loginLabel);
-            EnterID.setText("NCMP");
+            EnterID.setText(" ");
             EnterID.setEditable(true);
             display.add(EnterID);
             submit = new JButton();
@@ -1181,23 +1246,56 @@ import java.util.List;
             total.add(panel, "South");
             add(total, "South");
             submit.addActionListener(new ActionListener() {
+                Member idMember ;
                 public void actionPerformed(ActionEvent e) {
-                    try {
-                        Member searchMember = new Member();
-                        if (EnterID.getText().equalsIgnoreCase("NC") &&
-                                (firstField.getText() != null && !firstField.getText().equalsIgnoreCase("")) &&
-                                (surField.getText() != null && !surField.getText().equalsIgnoreCase(""))) {
-                            churchService.findByFirstNameAndLastName(firstField.getText(), surField.getText());
-                        } else if (firstField.getText().isEmpty() && surField.getText().isEmpty() && !EnterID.getText().isEmpty()) {
-                            churchService.getByIdFromMember(EnterID.getText());
+                        List<Member> searchMember = new ArrayList<>();
+
+                        if (EnterID.getText().equalsIgnoreCase("") &&
+                                (firstField.getText() != null && !firstField.getText().equalsIgnoreCase("")) ) {
+                            searchMember = churchService.findByFirstName(firstField.getText());
+                            System.out.println(EnterID.getText() + " name search");
+
+                        } else if ((firstField.getText()).isEmpty() && !(EnterID.getText()).isEmpty()) {
+                            System.out.println(EnterID.getText() + " id search 0");
+                             idMember = churchService.displayMethod(EnterID.getText());
+                           // searchMember.add(idMember);
+                            System.out.println(EnterID.getText() + " id search 1");
+
                         }
-                        resultTable = new JTable(churchService);
+                        columnSearch = new String[]{ "member_photo","id", "sex", "last_name", "first_name", "address", "date_born", "phone", "status",
+                                "attendance", "register_date", "resent"};
+                        searchObjects = new Object[1][12];
+                    BufferedImage bufferedImage = null;
+                    try {
+                        bufferedImage = ImageIO.read(new File(idMember.getMemberPhoto()));
+                        Image images = bufferedImage.getScaledInstance(150,120,Image.SCALE_SMOOTH);
+                        image.setIcon( new ImageIcon(images,""));
+                        searchObjects[0][0] = image;
+                        searchObjects[0][1] = idMember.getId();
+                        searchObjects[0][2] = idMember.getSex();
+                        searchObjects[0][3] = idMember.getLastName();
+                        searchObjects[0][4] = idMember.getFirstName();
+                        searchObjects[0][5] = idMember.getAddress();
+                        searchObjects[0][6] = idMember.getDateBorn();
+                        searchObjects[0][7] = idMember.getPhone();
+                        searchObjects[0][8] = idMember.getStatus();
+                        searchObjects[0][9] = idMember.getAttendance();
+                        searchObjects[0][10] = idMember.getRegisterDate();
+                        searchObjects[0][11] = idMember.getResent();
+                        resultTable = new JTable(searchObjects,columnSearch);
                         add(new JScrollPane(resultTable), "Center");
-                        TableRowSorter<TableModel> sorter = new TableRowSorter(churchService);
-                        resultTable.setRowSorter(sorter);
+                        imageRendererClass = new ImageRendererClass();
+                        imageRendererClass.setSetTable(resultTable);
+                        imageRendererClass.setString("member_photo");
+                        resultTable.getColumn("member_photo").setCellRenderer(imageRendererClass);
+/*
+                        TableRowSorter<TableModel> sorter = new TableRowSorter((TableModel) resultTable);
+                        resultTable.setRowSorter(sorter);*/
 
                     } catch (IllegalStateException sql) {
                         sql.printStackTrace();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
                     }
 
                     setSize(1600, 550);
@@ -1272,124 +1370,6 @@ import java.util.List;
         }
     }
 
-/*     class AttendanceLessDialog extends JDialog {
-         private JPanel pans;
-         private JPanel pan1;
-         private JPanel pan2;
-         private JTextField locates;
-         private JButton locat;
-         private JButton submit;
-         private JButton submitAbsent;
-         private JButton print;
-         private JButton print2;
-         private DatePicker pickDate;
-
-         public AttendanceLessDialog(final JFrame frame) {
-             super(frame, " Attendance By Date", null);
-             setLayout(new BorderLayout());
-             pans = new JPanel(new GridLayout(2, 1, 4, 1));
-             pan1 = new JPanel(new FlowLayout());
-             pan2 = new JPanel(new FlowLayout());
-             locates = new JTextField(10);
-             locat = new JButton("CHOOSE date");
-             locat.setToolTipText("enter the date in the format yyyy-mm-dd");
-             print = new JButton("GET PHONE");
-             print2 = new JButton("GET PHONE");
-             submit = new JButton("PRESENT.....");
-             submit.setToolTipText("SELECT THOSE THAT ARE PRESENT");
-             submitAbsent = new JButton("ABSENT......");
-             submitAbsent.setToolTipText("SELECT THOSE THAT ARE ABSENT");
-             pan1.add(locat);
-             pan1.add(locates);
-             pan2.add(submit);
-             pan2.add(submitAbsent);
-             pans.add(pan1);
-             pans.add(pan2);
-             locates.setText((new DatePicker(frame)).getDefaultDate());
-             add(pans, "South");
-             locat.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent event) {
-                     pickDate = new DatePicker(frame);
-                     pickDate.displayDate();
-                     locates.setText(pickDate.getPickedDate());
-                 }
-             });
-             submit.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent event) {
-                     resultTable = new JTable(churchService);
-                     add(new JScrollPane(resultTable), "Center");
-                     TableRowSorter<TableModel> sorter = new TableRowSorter(churchService);
-                     resultTable.setRowSorter(sorter);
-                     if (locates.getText() != null) {
-                         churchService.AttendanceRenge(locates.getText());
-                     }
-
-                     pan2.add(print2);
-                     setSize(1150, 650);
-                     setLocation(10, 10);
-                 }
-             });
-             submitAbsent.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent event) {
-                     resultTable = new JTable(churchService);
-                     add(new JScrollPane(resultTable), "Center");
-                     TableRowSorter<TableModel> sorter = new TableRowSorter(churchService);
-                     resultTable.setRowSorter(sorter);
-                     if (locates.getText() != null) {
-                         churchService.AttAbsent(locates.getText());
-                     }
-
-                     pan2.add(print);
-                     setSize(1150, 650);
-                     setLocation(10, 10);
-                 }
-             });
-             print.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent event) {
-                     createPhoneTxtFile(churchService.getAbsentPhone(locates.getText()));
-                     JOptionPane.showMessageDialog((Component) null, "OERATION  SUCCESFUL");
-                 }
-             });
-             print2.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent event) {
-                     createPhoneTxtFile(churchService.getPresentPhone(locates.getText()));
-                     JOptionPane.showMessageDialog((Component) null, "OERATION  SUCCESFUL");
-                 }
-             });
-             setSize(350, 150);
-             setLocation(350, 350);
-         }
-     }*/
-
-/*     class SetAbsentDialog extends JDialog {
-         private JButton submit;
-         private JLabel text;
-         private JPanel panel;
-         private String gate;
-
-         public SetAbsentDialog(JFrame frame) {
-             super(frame, "SET THOSE ABSENT", null);
-             setLayout(new BorderLayout());
-             panel = new JPanel(new GridLayout(1, 2, 2, 1));
-             submit = new JButton("SUBMIT");
-             text = new JLabel("SET ABSENT");
-             DateFormat dt = new SimpleDateFormat("dd-MM-YYYY");
-             gate = dt.format(new Date());
-             submit.setToolTipText("CLICK TO SET ABSENT");
-             panel.add(text);
-             panel.add(submit);
-             add(panel, "Center");
-             submit.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent event) {
-                     churchService.setAbsent(gate);
-                     JOptionPane.showMessageDialog((Component) null, "OERATION  SUCCESFUL");
-                 }
-             });
-             setSize(300, 85);
-             setLocation(350, 350);
-             setVisible(true);
-         }
-     }*/
 
     class SundayActivityDialog extends JDialog {
         private JTextField minister;
@@ -1514,7 +1494,7 @@ import java.util.List;
     }
 
 
-   /*  class DateAttendanceMemberDialog extends JDialog {
+     class DateAttendanceMemberDialog extends JDialog {
          private JPanel pans;
          private JPanel pan1;
          private JPanel pan2;
@@ -1524,7 +1504,7 @@ import java.util.List;
          private JButton print;
 
          public DateAttendanceMemberDialog(final JFrame frame) {
-             super(frame, "Members Attendance By Date", null);
+             super(frame, " Attendance By Date", null);
              setLayout(new BorderLayout());
              pans = new JPanel(new GridLayout(2, 1, 3, 1));
              pan1 = new JPanel(new FlowLayout());
@@ -1550,15 +1530,13 @@ import java.util.List;
              });
              submit.addActionListener(new ActionListener() {
                  public void actionPerformed(ActionEvent event) {
-                     String a = "M";
                      resultTable = new JTable(churchService);
                      add(new JScrollPane(resultTable), "Center");
                      TableRowSorter<TableModel> sorter = new TableRowSorter(churchService);
                      resultTable.setRowSorter(sorter);
                      if (locates.getText() != null) {
-                         churchService.memberAttendanceTime(a, locates.getText());
+                         churchService.memberAttendanceTime( locates.getText());
                      }
-
                      setSize(1000, 650);
                      setLocation(50, 50);
                  }
@@ -1581,7 +1559,7 @@ import java.util.List;
              setSize(350, 150);
              setLocation(350, 300);
          }
-     }*/
+     }
 
      class DateChurchAttendanceDialog extends JDialog {
          private JPanel pans;
@@ -1866,6 +1844,11 @@ import java.util.List;
 
 
     class AllDialog extends JDialog {
+
+
+        private Object[][] objects;
+        private String [] columnObject;
+        //private JLabel image = new JLabel();
         public AllDialog(JFrame Noframe) {
             super(Noframe, " ALL MEMBER ", null);
             setLayout(new BorderLayout());
@@ -1877,12 +1860,55 @@ import java.util.List;
             search.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
 // the use of defaulttablemode to supply the parameter fot jtable object.
-                    churchService.findAllMember();
-                    resultTable = new JTable(churchService);
+
+                   List<Member> allMember = churchService.findAllMember();
+                    int size = allMember.size(); //imageDisplayClass.findAllMember().size();
+                    objects = new Object[size][12];
+                    columnObject = new String[]{ "member_photo","id", "sex", "last_name", "first_name", "address", "date_born", "phone", "status",
+                            "attendance", "register_date", "resent"};
+                    for(int i =0; i<size; i++)
+                    {
+                        BufferedImage bufferedImage = null;
+                        try {
+                            bufferedImage = ImageIO.read(new File(allMember.get(i).getMemberPhoto()));
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_SMOOTH);
+                        JLabel image = new JLabel();
+                        image.setIcon( new ImageIcon(images, ""));
+                     //   }
+                        objects[i][0] = image;
+                        objects[i][1] = allMember.get(i).getId();
+                        objects[i][2] = allMember.get(i).getSex();
+                        objects[i][3] = allMember.get(i).getFirstName();
+                        objects[i][4] = allMember.get(i).getLastName();
+                        objects[i][5] = allMember.get(i).getAddress();
+                        objects[i][6] = allMember.get(i).getDateBorn();
+                        objects[i][7] = allMember.get(i).getPhone();
+                        objects[i][8] = allMember.get(i).getStatus();
+                        objects[i][9] = allMember.get(i).getAttendance();
+                        objects[i][10] = allMember.get(i).getRegisterDate();
+                        objects[i][11] = allMember.get(i).getResent();
+
+
+                    }
+                //    imageDisplayClass = new ImageDisplayClass(objects,columnObject);
+                   // defaultTableModel.setDataVector();
+                    resultTable = new JTable(objects,columnObject);
+                    imageRendererClass = new ImageRendererClass();
+                    imageRendererClass.setSetTable(resultTable);
+                    imageRendererClass.setString("member_photo");
+
+                 //   resultTable = new JTable(churchService);
                     add(new JScrollPane(resultTable), "Center");
-                    TableRowSorter<TableModel> sorter = new TableRowSorter(churchService);
-                    resultTable.setRowSorter(sorter);
-                    churchService.findAllMember();
+                 //   TableRowSorter<TableModel> sorter = new TableRowSorter(imageDisplayClass);
+                    resultTable.setRowHeight(120);
+                    resultTable.getColumn("member_photo").setCellRenderer( imageRendererClass);
+                    resultTable.setCellSelectionEnabled(true);
+                    resultTable.getColumnModel().getColumn(0).setPreferredWidth(150);
+                //    resultTable.setRowSorter(sorter);
+                //    imageDisplayClass.findAllMember();
                     setSize(1300, 550);
                     setLocation(200, 100);
                 }
@@ -1903,9 +1929,13 @@ import java.util.List;
 
                 }
             });
+
+
+
             setSize(250, 150);
             setLocation(550, 300);
         }
+
     }
 
     class Display extends JDialog {
@@ -1986,7 +2016,8 @@ import java.util.List;
         private JLabel noting;
         private JButton printNumber;
         private Object[][] objects;
-        private Object [] columnObject;
+        private String [] columnObject;
+        private List<BirthDayMember> birthDayList;
 
         public DisplayTable(JFrame frame) {
             super(frame, "", null);
@@ -2006,24 +2037,52 @@ import java.util.List;
             add(new JScrollPane(resultTable), "Center");
             submit.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event) {
-                    defaultTableModel = new DefaultTableModel();
-                    churchService.getBirthDaysWorkerList();
-                    int size = churchService.getBirthDaysWorkerList().size();
-                    objects = new Object[size][13];
-                    columnObject = new Object[13];
-                    defaultTableModel.setDataVector(objects,columnObject);
-                    resultTable = new JTable(defaultTableModel);
+                    birthDayList =churchService.getBirthDaysWorkerList();
+                    int size = birthDayList.size();
+                    objects = new Object[size][8];
+                    for (int i=0; i< size; i++)
+                    {
+                        if (birthDayList.get(i).MemberPhoto() !=null)
+                        {
+                            ImageIcon imageIcon = new ImageIcon(new ImageIcon(birthDayList.get(i).MemberPhoto()).getImage()
+                                    .getScaledInstance(150,120,Image.SCALE_SMOOTH));
+                            objects[i][0] = imageIcon;
+                        }
+                        else {
+                        objects[i][0] = null;}
+                        objects[i][1] = birthDayList.get(i).firstName();
+                        objects[i][2] = birthDayList.get(i).lastName();
+                        objects[i][3] = birthDayList.get(i).address();
+                        objects[i][4] = birthDayList.get(i).dateBorn();
+                        objects[i][5] = birthDayList.get(i).status();
+                        objects[i][6] = birthDayList.get(i).phone();
+                        objects[i][7] = birthDayList.get(i).sex();
+                    }
+                    columnObject = new String[]{"MemberPhoto", "FirstName", "LastName", "Address", "DateBorn",
+                            "Status", "Phone","SEX" };
+                //    imageDisplayClass = new ImageDisplayClass(objects,columnObject);
+               //     imageDisplayClass.getBirthDaysWorkerList();
+                //    resultTable = new JTable(imageDisplayClass);
+                    resultTable.setRowHeight(120);
+                    resultTable.getColumnModel().getColumn(0).setPreferredWidth(150);
+                    add(new JScrollPane(resultTable), "Center");
+                //    TableRowSorter<TableModel> sorter = new TableRowSorter(imageDisplayClass);
+                //    resultTable.setRowSorter(sorter);
+
+
+
+
                     printNumber.setEnabled(true);
                 }
             });
             printNumber.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event) {
                     List<String> stringList = new ArrayList<>();
-                    List<Member> list = new ArrayList<>();
+                    List<BirthDayMember> list = new ArrayList<>();
                     String[] birthArray = new String[list.size()];
                     list = churchService.getBirthDaysWorkerList();
                     for (int x = 0; x < list.size(); x++) {
-                        stringList.add(list.get(x).getPhone());
+                        stringList.add(list.get(x).phone());
                     }
                     birthArray = stringList.toArray(birthArray);
                     createPhoneTxtFile(birthArray);
@@ -2049,196 +2108,7 @@ import java.util.List;
             setLocation(50, 150);
         }
     }
+
 }
 
-/*
-     class FirstTimerJDialog extends JDialog {
-         public FirstTimerJDialog(JFrame frame) {
-             super(frame, " FIRST  TIMERS ", null);
-             setLayout(new BorderLayout());
-             JPanel pane = new JPanel();
-             JButton search = new JButton("VIEW");
-             pane.add(search);
-             pane.add(print);
-             add(pane, "South");
-             search.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent e) {
-
-                     int size = 0;
-                     try {churchService.findAllFirstTimer();
-                         *//*
-                         size = (churchService.findAllFirstTimer().size())/9;
-                         objectArray = new Object[churchService.findAllFirstTimer().size()][9];
-                         int input = 0;
-                         for (int x=0; x<size; x++)
-                         {
-                             for (int i = 0; i < 9; i++) {
-                                 objectArray[x][i]=churchService.findAllFirstTimer().get(input);
-                                 ++input;
-                             }
-                         }*//*
-                     } catch (SQLException ex) {
-                         throw new RuntimeException(ex);
-                     }
-
-                 *//*} catch (NoValueFound e) {
-                     throw new RuntimeException(e);
-                 }*//**//*
-                 objectColumn = new Object[]{"FIRSTNAME","LASTNAME", "SEX", "MARITAL STATUS", "ADDRESS","PHONE",
-                         "DATE BIRTH", "EMAIL", "JOIN DATE"};
-                 defaultTableModel = new DefaultTableModel(objectArray,objectColumn);*//*
-                 resultTable = new JTable(churchService);
-                     add(new JScrollPane(resultTable), "Center");
-                     TableRowSorter<TableModel> sorter = new TableRowSorter(churchService);
-                     resultTable.setRowSorter(sorter);
-
-                     setSize(1000, 550);
-                     setLocationRelativeTo(null);
-                  //   setLocation(20, 100);
-                 }
-             });
-             print.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent event) {
-                     MessageFormat headerFormat = new MessageFormat("");
-                     MessageFormat footerFormat = new MessageFormat("Page-{0}");
-
-                     try {
-                         resultTable.print(PrintMode.FIT_WIDTH, headerFormat, footerFormat, true, (PrintRequestAttributeSet) null, true);
-                     } catch (HeadlessException sql) {
-                         sql.printStackTrace();
-                     } catch (PrinterException sql) {
-                         sql.printStackTrace();
-                     }
-
-                 }
-             });
-             setSize(250, 150);
-             setLocation(350, 300);
-         }
-     }*/
-/*
-     class AddFirstTimerJDialog extends JDialog {
-         private JTextField firstVisitDate,dateOfBirth,phoneNumber,lastname,firstName,address,emailField,marry,sex;
-         private JList feedBack;
-         private JComboBox marryBox;
-         private JLabel hearAboutLabel,emailLabel,firstNameLabel,lastNameLabel,phoneNumberLabel,addressLabel,
-         dateOfBirthLabel,sexLabel,marryLabel,firstVisitLabel;
-         private JButton birthDate;
-         private JButton firstDate;
-         private JButton submit;
-         private JComboBox status;
-         private JPanel mainPanel;
-         private JPanel otherPanel;
-         private String mariedStatus;
-         private String malefemale;
-
-         public AddFirstTimerJDialog(final JFrame frame) {
-             super(frame, "ADD FIRST  TIMER   INFORMATION", null);
-             setLayout(new BorderLayout());
-             final String[] sex = new String[]{"CHOOSE","MALE", "FEMALE"};
-             final String[] request = new String[]{"A Friend Invited me", "I just came myself", "I found you online"};
-             final String[] marry = new String[]{"CHOOSE","MARRIED", "SINGLE "};
-             submit = new JButton("SUBMIT");
-             firstName = new JTextField();
-             emailField = new JTextField();
-             emailLabel = new JLabel("        Email");
-             lastname = new JTextField();
-             phoneNumber = new JTextField();
-             address = new JTextField();
-             dateOfBirth = new JTextField();
-             marryBox = new JComboBox(marry);
-             status = new JComboBox(sex);
-             marryBox.setMaximumRowCount(3);
-             firstVisitDate = new JTextField();
-             birthDate = new JButton(new DatePicker(null).getDefaultDate());
-             firstDate = new JButton(new DatePicker(null).getDefaultDate());
-             firstNameLabel = new JLabel("        FIRSTNAME");
-             lastNameLabel = new JLabel("        LASTNAME");
-             phoneNumberLabel = new JLabel("        PHONE NUMBER");
-             addressLabel = new JLabel("        ADDRESS");
-             marryLabel = new JLabel("      Marital Status ");
-             sexLabel = new JLabel("      MALE/FEMALE ");
-             mainPanel = new JPanel();
-             otherPanel = new JPanel();
-             mainPanel.setLayout(new GridLayout(9, 2, 3, 1));
-             otherPanel.setLayout(new FlowLayout());
-             mainPanel.add(firstNameLabel);
-             mainPanel.add(firstName);
-             mainPanel.add(lastNameLabel);
-             mainPanel.add(lastname);
-             mainPanel.add(sexLabel);
-             mainPanel.add(status);
-             mainPanel.add(phoneNumberLabel);
-             mainPanel.add(phoneNumber);
-             mainPanel.add(addressLabel);
-             mainPanel.add(address);
-             mainPanel.add(birthDate);
-             mainPanel.add(dateOfBirth);
-             mainPanel.add(firstDate);
-             mainPanel.add(firstVisitDate);
-             mainPanel.add(marryLabel);
-             mainPanel.add(marryBox);
-             mainPanel.add(emailLabel);
-             mainPanel.add(emailField);
-             otherPanel.setBorder(BorderFactory.createTitledBorder(""));
-             otherPanel.add(submit);
-             firstVisitDate.setText((new DatePicker(frame)).getDefaultDate());
-             dateOfBirth.setText((new DatePicker(frame)).getDefaultDate());
-             add(mainPanel, "Center");
-             add(otherPanel, "South");
-             birthDate.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent event) {
-                     DatePicker pick = new DatePicker(frame);
-                     pick.displayDate();
-                     dateOfBirth.setText(pick.getPickedDate());
-                 }
-             });
-             firstDate.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent event) {
-                     DatePicker pick = new DatePicker(frame);
-                     pick.displayDate();
-                     firstVisitDate.setText(pick.getPickedDate());
-                 }
-             });
-             status.addItemListener(new ItemListener() {
-                 public void itemStateChanged(ItemEvent event) {
-                     if (event.getStateChange() == 1) {
-                         malefemale = sex[status.getSelectedIndex()];
-                     }
-
-                 }
-             });
-             marryBox.addItemListener(new ItemListener() {
-                 public void itemStateChanged(ItemEvent event) {
-                     if (event.getStateChange() == 1) {
-                         mariedStatus = sex[marryBox.getSelectedIndex()];
-                     }
-
-                 }
-             });
-
-             submit.addActionListener(new ActionListener() {
-                 public void actionPerformed(ActionEvent event) {
-                     churchService.saveFirstTimer(new FirstTimer(firstName.getText(),lastname.getText(),  malefemale,
-                             mariedStatus,address.getText(), phoneNumber.getText(), dateOfBirth.getText(),
-                              emailField.getText(), firstVisitDate.getText()));
-                     lastname.setText("");
-                     firstName.setText("");
-                     address.setText("");
-                     phoneNumber.setText("");
-                     firstVisitDate.setText((new DatePicker(frame)).getDefaultDate());
-                     dateOfBirth.setText((new DatePicker(frame)).getDefaultDate());
-                     emailField.setText("");
-                     emailField.setEditable(true);
-                     lastname.setEditable(true);
-                     firstName.setEditable(true);
-                     address.setEditable(true);
-                     phoneNumber.setEditable(true);
-                 }
-             });
-             setSize(300, 750);
-             setLocation(370, 3);
-             setVisible(true);
-         }
-     }*/
 
