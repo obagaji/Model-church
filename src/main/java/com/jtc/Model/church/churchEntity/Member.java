@@ -27,7 +27,7 @@ public class Member {
         private int attendance;
        private String registerDate;
        private String resent;
-    @Column(name="member_photo",unique = true)
+    @Column(name="member_photo")
     private String memberPhoto;
 
     public Member(String id, String sex, String lastName, String firstName, String address, String dateBorn, String phone,

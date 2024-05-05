@@ -537,8 +537,6 @@ import java.util.List;
             pan.add(workerStatus);
             pan.add(workersexlabel);
             pan.add(workerSex);
-/*            pan.add(workerStreetLabel);
-            pan.add(streetField);*/
             pan.add(workerEmail);
             pan.add(emailField);
             pan.add(sub);
@@ -553,17 +551,19 @@ import java.util.List;
                     JFileChooser jFileChooser = new JFileChooser();
                     jFileChooser.setFileSelectionMode(JFileChooser.APPROVE_OPTION);
                     int result = jFileChooser.showOpenDialog(null);
-                    if (result==JFileChooser.CANCEL_OPTION)
+                    /*if (result==JFileChooser.CANCEL_OPTION)
                     {
                         System.exit(1);
-                    }
+                    }*/
                     File file = jFileChooser.getSelectedFile();
                     if((file==null) || file.getName().equals(""))
                     {
                         emailField.setText("C:\\church\\rccgsmall.jpg");
                     }
-                    emailField.setText(file.getAbsolutePath());
-
+                    if(file.getAbsolutePath()==null){
+                        emailField.setText("C:\\church\\rccgsmall.jpg");
+                    }
+                    else emailField.setText(file.getAbsolutePath());
                 }
             });
             workerDlabel.addActionListener(new ActionListener() {
@@ -607,7 +607,7 @@ import java.util.List;
                         JOptionPane.showMessageDialog((Component) null, "YOU ARE REGISTERED");
                     }
 
-                    workerIdfield.setText("NC");
+                    workerIdfield.setText("");
                     workerffield.setText("");
                     workerAfield.setText("");
                     workerPfield.setText("");
@@ -1878,7 +1878,11 @@ import java.util.List;
                     {
                         BufferedImage bufferedImage = null;
                         try {
+                            if(allMember.get(i).getMemberPhoto().equalsIgnoreCase(""))
+                                bufferedImage = ImageIO.read(new File("C:\\church\\rccgsmall.jpg"));
+                            else
                             bufferedImage = ImageIO.read(new File(allMember.get(i).getMemberPhoto()));
+
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
