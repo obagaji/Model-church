@@ -82,7 +82,7 @@ import java.util.List;
     private JLabel label;
     private JButton print;
     private Timer animationTimer;
-    private final int ANIMATION_DELAY = 1500;
+   // private final int ANIMATION_DELAY = 1500;
     private String name;
 
     private JLabel display1,display2,display3;
@@ -300,7 +300,8 @@ import java.util.List;
             public void actionPerformed(ActionEvent e) {
                 for (DateClass dateClass1: churchService.getAllDateClass())
                 {
-                    churchService.updateAllDateClass(dateClass1.getIdMember());
+
+                    churchService.updateAllDateClass(dateClass1.getIdMember(),"ABSENCE");
                 }
                 JOptionPane.showMessageDialog(null,"OK","RESET",JOptionPane.INFORMATION_MESSAGE);
             }
@@ -542,7 +543,7 @@ import java.util.List;
             pan.add(emailField);
             pan.add(sub);
             pan.add(cant);
-            workerIdfield.setText("NC");
+            workerIdfield.setText("");
             workerIdfield.setEditable(true);
             add(pan, "Center");
 
@@ -596,16 +597,12 @@ import java.util.List;
                             workerAfield.getText(),formatedDate,workerPfield.getText(),   sm,
                             1, loginDates, loginDates, emailField.getText());
                     String stringID = workerIdfield.getText();
-/*
-                    List<Member> compareMember = new ArrayList<>();
-                    compareMember = churchService.findByIdValue(stringID);*/
-                    if (!churchService.displayName(name)) {
+                    if (!churchService.displayName(stringID)) {
                         nonWorker = new NonWorker(stringID, loginDates);
                        int x = churchService.addMemberInfo(member);
                         churchService.addNonWorkers(nonWorker);
                         dateClass = new DateClass(stringID,loginDates, "PRESENT");
                         churchService.addDateClass( dateClass);
-
                     } else {
                         JOptionPane.showMessageDialog((Component) null, "YOU ARE REGISTERED");
                     }
@@ -805,7 +802,7 @@ import java.util.List;
         private DatePicker pickDate;
 
         public Attendance(final JFrame frame) {
-            super(frame, "      VIEW  ATTENDANCE PRESENT/ ABSENCE IN CHURCH       ", null);
+            super(frame, "      VIEW  ATTENDANCE PRESENT/  ABSENCE  IN CHURCH       ", null);
             setLayout(new BorderLayout());
             panel = new JPanel();
             //locat = new JButton("  ENTER DATE");
@@ -906,14 +903,15 @@ import java.util.List;
                     name = lofield.getText().trim();// name here is the login id of the user.
                     try {
 
-                        List<Member> checkMember = new ArrayList<>() ;
-                        checkMember = churchService.findByIdValue(name);
-                        System.out.println(checkMember.get(0).getResent() + " checking");
 
-                        if (!churchService.displayName(name)) {
+                        if (churchService.displayName(name)) {
+
+                            List<Member> checkMember = new ArrayList<>() ;
+                            checkMember = churchService.findByIdValue(name);
                             if (churchService.getCurrentDate(name).equalsIgnoreCase(dateString))
                             {
                                 JOptionPane.showMessageDialog(null, "You have Logged In Before");
+                                lofield.setText("");
                             }
                             //  logMember = true;
                             else// if (!churchService.getCurrentDate(nameId).equalsIgnoreCase(dateString))
@@ -960,6 +958,7 @@ import java.util.List;
 // search the data base if the id of the user exist
                         else  {
                             JOptionPane.showMessageDialog((Component) null, "User Not Registered   : Please Register");
+                            lofield.setText("");
                         }
                     } catch (IllegalStateException sql) {
                         sql.toString();
@@ -974,13 +973,14 @@ import java.util.List;
                         String dateString = dt.format(new Date());
                         name = lofield.getText();
                         try {
-                            List<Member> checkMember = new ArrayList<>() ;
-                            checkMember = churchService.findByIdValue(name);
+                                if (churchService.displayName(name)) {
 
-                                if (!churchService.displayName(name)) {
+                                    List<Member> checkMember = new ArrayList<>() ;
+                                    checkMember = churchService.findByIdValue(name);
                                     if (churchService.getCurrentDate(name).equalsIgnoreCase(dateString))
                                 {
                                     JOptionPane.showMessageDialog(null, "You have Logged In Before");
+                                    lofield.setText("");
                                 }
 
                                 else// if (!churchService.getCurrentDate(nameId).equalsIgnoreCase(dateString))
@@ -1025,6 +1025,7 @@ import java.util.List;
                             else
                             {
                                 JOptionPane.showMessageDialog(null, "User Not Registered  : Please Register ");
+                                lofield.setText("");
                             }/* else if (!churchService.getName(name)) {
                                  JOptionPane.showMessageDialog( null, "Please Register ");
                              }*/
@@ -1869,7 +1870,7 @@ import java.util.List;
 // the use of defaulttablemode to supply the parameter fot jtable object.
 
                    List<Member> allMember = churchService.findAllMember();
-                    int size = allMember.size(); //imageDisplayClass.findAllMember().size();
+                    int size = allMember.size();
                     objects = new Object[size][12];
                     columnObject = new String[]{ "member_photo","id", "sex", "last_name", "first_name", "address", "date_born", "phone", "status",
                             "attendance", "register_date", "resent"};
@@ -1884,7 +1885,7 @@ import java.util.List;
                         Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_SMOOTH);
                         JLabel image = new JLabel();
                         image.setIcon( new ImageIcon(images, ""));
-                     //   }
+
                         objects[i][0] = image;
                         objects[i][1] = allMember.get(i).getId();
                         objects[i][2] = allMember.get(i).getSex();
@@ -2024,7 +2025,7 @@ import java.util.List;
         private JButton printNumber;
         private Object[][] objects;
         private String [] columnObject;
-        private List<BirthDayMember> birthDayList;
+        private List<Member> birthDayList;
 
         public DisplayTable(JFrame frame) {
             super(frame, "", null);
@@ -2044,40 +2045,46 @@ import java.util.List;
             add(new JScrollPane(resultTable), "Center");
             submit.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event) {
+
                     birthDayList =churchService.getBirthDaysWorkerList();
                     int size = birthDayList.size();
+                    System.out.println(size);
                     objects = new Object[size][8];
-                    for (int i=0; i< size; i++)
+                          for(int i =0; i<size; i++)
                     {
-                        if (birthDayList.get(i).MemberPhoto() !=null)
-                        {
-                            ImageIcon imageIcon = new ImageIcon(new ImageIcon(birthDayList.get(i).MemberPhoto()).getImage()
-                                    .getScaledInstance(150,120,Image.SCALE_SMOOTH));
-                            objects[i][0] = imageIcon;
+                        BufferedImage bufferedImage = null;
+                        try {
+                            bufferedImage = ImageIO.read(new File(birthDayList.get(i).getMemberPhoto()));
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
                         }
-                        else {
-                        objects[i][0] = null;}
-                        objects[i][1] = birthDayList.get(i).firstName();
-                        objects[i][2] = birthDayList.get(i).lastName();
-                        objects[i][3] = birthDayList.get(i).address();
-                        objects[i][4] = birthDayList.get(i).dateBorn();
-                        objects[i][5] = birthDayList.get(i).status();
-                        objects[i][6] = birthDayList.get(i).phone();
-                        objects[i][7] = birthDayList.get(i).sex();
+                        Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_SMOOTH);
+                        JLabel image = new JLabel();
+                        image.setIcon( new ImageIcon(images, ""));
+                     //   }
+                        objects[i][0] = image;
+
+                        objects[i][1] = birthDayList.get(i).getFirstName();
+                        objects[i][2] = birthDayList.get(i).getLastName();
+                        objects[i][3] = birthDayList.get(i).getAddress();
+                        objects[i][4] = birthDayList.get(i).getDateBorn();
+                        objects[i][5] = birthDayList.get(i).getStatus();
+                        objects[i][6] = birthDayList.get(i).getPhone();
+                        objects[i][7] = birthDayList.get(i).getSex();
+
                     }
-                    columnObject = new String[]{"MemberPhoto", "FirstName", "LastName", "Address", "DateBorn",
-                            "Status", "Phone","SEX" };
-                //    imageDisplayClass = new ImageDisplayClass(objects,columnObject);
-               //     imageDisplayClass.getBirthDaysWorkerList();
-                //    resultTable = new JTable(imageDisplayClass);
+                    columnObject = new String[]{"member_photo", "first_name", "last_name", "address", "date_born",
+                            "status", "phone","sex" };
+                    resultTable = new JTable(objects,columnObject);
+                    imageRendererClass = new ImageRendererClass();
+                    imageRendererClass.setSetTable(resultTable);
+                    imageRendererClass.setString("member_photo");
+                    add(new JScrollPane(resultTable), "Center");
                     resultTable.setRowHeight(120);
+                    resultTable.getColumn("member_photo").setCellRenderer( imageRendererClass);
+                    resultTable.setCellSelectionEnabled(true);
                     resultTable.getColumnModel().getColumn(0).setPreferredWidth(150);
                     add(new JScrollPane(resultTable), "Center");
-                //    TableRowSorter<TableModel> sorter = new TableRowSorter(imageDisplayClass);
-                //    resultTable.setRowSorter(sorter);
-
-
-
 
                     printNumber.setEnabled(true);
                 }
@@ -2085,11 +2092,11 @@ import java.util.List;
             printNumber.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event) {
                     List<String> stringList = new ArrayList<>();
-                    List<BirthDayMember> list = new ArrayList<>();
+                    List<Member> list = new ArrayList<>();
                     String[] birthArray = new String[list.size()];
                     list = churchService.getBirthDaysWorkerList();
                     for (int x = 0; x < list.size(); x++) {
-                        stringList.add(list.get(x).phone());
+                        stringList.add(list.get(x).getPhone());
                     }
                     birthArray = stringList.toArray(birthArray);
                     createPhoneTxtFile(birthArray);

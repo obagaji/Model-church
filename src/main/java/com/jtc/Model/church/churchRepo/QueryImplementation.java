@@ -218,13 +218,14 @@ public class QueryImplementation extends AbstractTableModel {
 
     public boolean displayName(String memberId)
     {
-        boolean result = false;
         String name = "";
         String sql = "SELECT id From member where member.id = ?";
         try {
 
-             name = String.valueOf(jdbcTemplate.query(sql,(rs, rowNum) -> rs.getString("id")
-                    ,memberId).stream().findFirst());
+             name = jdbcTemplate.queryForObject(sql,(rs, rowNum) -> rs.getString("id")
+                    ,memberId);
+             System.out.println(name);
+
         }
         catch(EmptyResultDataAccessException ex)
         {
@@ -234,10 +235,15 @@ public class QueryImplementation extends AbstractTableModel {
         {
             return false;
         }
+        if (name!=null) {
+            if (name.equalsIgnoreCase(memberId))
+                return true;
+            else
+                return false;
+        }
+        else return false;
 
-        if (name.equalsIgnoreCase(memberId))
-            result= true;
-        return result;
+
     }
 /*
      * Use the naitive Query to update the member table. the inchurch
@@ -246,7 +252,7 @@ public class QueryImplementation extends AbstractTableModel {
 
     public int updateAttendanceOfMembers( String id)
     {
-        String sql = " update date_class set out_church = 'PRESENT' where idmember = ?";
+        String sql = " update date_class set out_church  = 'PRESENT' where idmember = ?";
         return jdbcTemplate.update(sql,id);
     }
 
@@ -387,7 +393,7 @@ public class QueryImplementation extends AbstractTableModel {
     }
     public int updateInchurchValue( String name)
     {
-        String sql = "UPDATE date_class SET out_church = 'PRESENT'  WHERE id = ?";
+        String sql = "UPDATE date_class SET out_church = PRESENT  WHERE idmember = ?";
         return jdbcTemplate.update(sql,name);
     }
 
@@ -396,10 +402,10 @@ public class QueryImplementation extends AbstractTableModel {
         String sql = " INSERT INTO date_class ( idmember, class_date,  out_church)VALUES(?,?,?)";
         return jdbcTemplate.update(sql, dateClass.getIdMember(),dateClass.getClassDate(),dateClass.getOutChurch());
     }
-    public int updateAllDateClass(String id)
+    public int updateAllDateClass(String id, String inOrOut)
     {
-        String sql = "UPDATE date_class SET out_church = 'ABSENT'  WHERE id = ?";
-        return jdbcTemplate.update(sql,id);
+        String sql = "UPDATE date_class SET out_church = ?  WHERE idmember = ?";
+        return jdbcTemplate.update(sql,inOrOut,id);
     }
     public List<DateClass>getAllDateClass()
     {
@@ -623,21 +629,21 @@ public class QueryImplementation extends AbstractTableModel {
         }*/
         return memberList;
     }
-    public List<BirthDayMember> getBirthDaysWorkerList()
+    public List<Member> getBirthDaysWorkerList()
     {
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-YYYY");
         String formatedDate = dateFormat.format(new Date());
         String searchString = formatedDate.substring(3,5);
-        String sql = "SELECT member_photo, first_name,last_name, address,date_born,phone,status,sex FROM member " +
-                "INNER JOIN workers WHERE workers.worker_Id = member.id AND member.date_born = ? ";
+        String sql = "SELECT * FROM member ";
 
-        List<BirthDayMember> memberList= jdbcTemplate.query(sql,(rs, rowNum) -> new BirthDayMember(
-                rs.getString("member_photo"),
-                rs.getString("first_name"),rs.getString("last_name"), rs.getString("address"),
-                rs.getString("date_born"),rs.getString("status")
-                , rs.getString("phone"),rs.getString("sex")),searchString);
+        List<Member> memberList= jdbcTemplate.query(sql,(rs, rowNum) -> new Member(rs.getString("id" ),
+                rs.getString("sex"),rs.getString("last_name"),
+                rs.getString("first_name"),rs.getString("address"),rs.getString("date_born"),
+                rs.getString("phone"),  rs.getString("status"),
+                rs.getInt("attendance"), rs.getString("register_date"),
+                rs.getString("resent"), rs.getString("member_photo")));
         return memberList.stream().filter(member ->
-                (member.dateBorn().substring(3,5).equalsIgnoreCase(searchString))).toList();
+                (member.getDateBorn().substring(3,5).equalsIgnoreCase(searchString))).toList();
 
     }
 
