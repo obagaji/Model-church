@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS nonworker;
 DROP TABLE IF EXISTS maintenance;
 DROP TABLE IF EXISTS attendance;
 DROP TABLE IF EXISTS Serial_Member;
+DROP TABLE IF EXISTS workers_login;
 
 CREATE TABLE  Member
 (
