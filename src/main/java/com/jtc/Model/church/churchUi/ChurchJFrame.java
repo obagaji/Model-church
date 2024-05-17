@@ -20,6 +20,7 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.awt.print.PrinterException;
 import java.io.BufferedReader;
 import java.io.File;
@@ -502,13 +503,11 @@ import java.util.List;
             workersexlabel.setText("          SEX");
             workerSex = new JComboBox(sex);
             workerStreetLabel = new JLabel("           ");
-
             streetField = new JTextField(15);
             streetField.enable(false);
             streetField.enableInputMethods(false);
             workerEmail = new JButton("          MEMBER PHOTO");
             emailField = new JTextField(20);
-
             workerPlabel.setBorder(BorderFactory.createTitledBorder(""));
             workerIdlabel.setBorder(BorderFactory.createTitledBorder(""));
             workerFirstLabel.setBorder(BorderFactory.createTitledBorder(""));
@@ -517,7 +516,6 @@ import java.util.List;
             workersexlabel.setBorder(BorderFactory.createTitledBorder(""));
             workerEmail.setBorder(BorderFactory.createTitledBorder(""));
             workerStatusLabel.setBorder(BorderFactory.createTitledBorder(""));
-
             JButton sub = new JButton("SUBMIT");
             sub.setIcon(new javax.swing.ImageIcon("C:\\church\\Save16.gif"));
             JButton cant = new JButton("CANCEL");
@@ -548,22 +546,51 @@ import java.util.List;
             workerEmail.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    String fileType = "";
                     JFileChooser jFileChooser = new JFileChooser();
                     jFileChooser.setFileSelectionMode(JFileChooser.APPROVE_OPTION);
                     int result = jFileChooser.showOpenDialog(null);
-                    /*if (result==JFileChooser.CANCEL_OPTION)
-                    {
-                        System.exit(1);
-                    }*/
                     File file = jFileChooser.getSelectedFile();
+
                     if((file==null) || file.getName().equals(""))
                     {
-                        emailField.setText("C:\\church\\rccgsmall.jpg");
+                        emailField.setText("C:\\church\\rccgsmall1.jpg");
                     }
-                    if(file.getAbsolutePath()==null){
-                        emailField.setText("C:\\church\\rccgsmall.jpg");
+                    try {
+                        emailField.setText(file.getAbsolutePath());
+
                     }
-                    else emailField.setText(file.getAbsolutePath());
+                    catch (NullPointerException nullPointerException)
+                    {
+                        emailField.setText("C:\\church\\rccgsmall1.jpg");
+                    }
+
+                    if (emailField.getText().endsWith("jpg")) {
+                         fileType = "jpg";
+                    }
+                    else if (emailField.getText().endsWith("jif")) {
+                         fileType = "jif";
+                    }
+                    else if (emailField.getText().endsWith("jpeg")) {
+                         fileType = "jpeg";
+                    }
+                    else if (emailField.getText().endsWith("png")) {
+                         fileType = "png";
+                    }
+                    BufferedImage bufferedImage = null;
+                    try {
+                            bufferedImage = ImageIO.read(new File(emailField.getText()));
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_FAST);
+                    File saveFile = new File("C:\\church\\" + file.getName()+"." + fileType);
+                    try {
+                        ImageIO.write(ImageConversion.convertToBufferedImage(images),fileType,saveFile);
+                        emailField.setText("C:\\church\\" + file.getName()+"." + fileType);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             });
             workerDlabel.addActionListener(new ActionListener() {
@@ -648,7 +675,7 @@ import java.util.List;
             //  streetField.setEditable(true);
             emailField.setEditable(true);
             setSize(400, 500);
-            setLocation(580, 280);
+            setLocation(580, 220);
         }
     }
 
@@ -1117,6 +1144,7 @@ import java.util.List;
             photoLabel.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    String fileType = "";
                     JFileChooser jFileChooser = new JFileChooser();
                     jFileChooser.setFileSelectionMode(JFileChooser.APPROVE_OPTION);
                     int result = jFileChooser.showOpenDialog(null);
@@ -1125,12 +1153,48 @@ import java.util.List;
                         System.exit(1);
                     }
                     File file = jFileChooser.getSelectedFile();
-                    if((file==null) || file.getName().equals(""))
+                    if(file.getName().equals(""))
                     {
-                        photoImage.setText("C:\\church\\rccgsmall.jpg");
+                        photoImage.setText("C:\\church\\rccgsmall1.jpg");
                     }
-                    photoImage.setText(file.getAbsolutePath());
+                    try {
+                        file.getAbsolutePath();
+                        if(file==null)
+                            photoImage.setText("C:\\church\\rccgsmall1.jpg");
 
+                    }
+                    catch (NullPointerException nullPointerException)
+                    {
+                        photoImage.setText("C:\\church\\rccgsmall1.jpg");
+                    }
+                      photoImage.setText(file.getAbsolutePath());
+                    if (photoImage.getText().endsWith("jpg")) {
+                         fileType = "jpg";
+                    }
+                    else if (photoImage.getText().endsWith("jif")) {
+                         fileType = "jif";
+                    }
+                    else if (photoImage.getText().endsWith("jpeg")) {
+                         fileType = "jpeg";
+                    }
+                    else if (photoImage.getText().endsWith("png")) {
+                         fileType = "png";
+                    }
+                    BufferedImage bufferedImage = null;
+                    BufferedImage saveBufferedImage = null;
+                    try {
+                            bufferedImage = ImageIO.read(new File(photoImage.getText()));
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_SMOOTH);
+                    File saveFile = new File("C:\\church\\" + file.getName() + "1." + fileType);
+                    try {
+                        ImageIO.write(ImageConversion.convertToBufferedImage(images),fileType,saveFile);
+                        photoImage.setText("C:\\church\\" + file.getName()+"1." + fileType);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             });
             searchButton.addActionListener(new ActionListener() {
@@ -1876,19 +1940,25 @@ import java.util.List;
                             "attendance", "register_date", "resent"};
                     for(int i =0; i<size; i++)
                     {
-                        BufferedImage bufferedImage = null;
-                        try {
-                            if(allMember.get(i).getMemberPhoto().equalsIgnoreCase(""))
-                                bufferedImage = ImageIO.read(new File("C:\\church\\rccgsmall.jpg"));
-                            else
-                            bufferedImage = ImageIO.read(new File(allMember.get(i).getMemberPhoto()));
-
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_SMOOTH);
                         JLabel image = new JLabel();
-                        image.setIcon( new ImageIcon(images, ""));
+                   //     BufferedImage bufferedImage = null;
+                   //     BufferedImage saveBufferedImage = null;
+                   //     try {
+                            if(allMember.get(i).getMemberPhoto().equalsIgnoreCase("")) {
+                                image.setIcon(new javax.swing.ImageIcon("C:\\church\\rccgsmall.jpg"));
+                            }
+                      //          bufferedImage = ImageIO.read(new File("C:\\church\\rccgsmall.jpg"));
+                    //        else
+                    //        bufferedImage = ImageIO.read(new File(allMember.get(i).getMemberPhoto()));
+                   //     } catch (IOException ex) {
+                   //         throw new RuntimeException(ex);
+                  //      }
+                    //    Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_SMOOTH);
+
+
+                   //     image.setIcon( new ImageIcon(bufferedImage, ""));
+                        image.setIcon(new javax.swing.ImageIcon(allMember.get(i).getMemberPhoto()));
+
 
                         objects[i][0] = image;
                         objects[i][1] = allMember.get(i).getId();
@@ -1902,11 +1972,7 @@ import java.util.List;
                         objects[i][9] = allMember.get(i).getAttendance();
                         objects[i][10] = allMember.get(i).getRegisterDate();
                         objects[i][11] = allMember.get(i).getResent();
-
-
                     }
-                //    imageDisplayClass = new ImageDisplayClass(objects,columnObject);
-                   // defaultTableModel.setDataVector();
                     resultTable = new JTable(objects,columnObject);
                     imageRendererClass = new ImageRendererClass();
                     imageRendererClass.setSetTable(resultTable);
@@ -1921,8 +1987,8 @@ import java.util.List;
                     resultTable.getColumnModel().getColumn(0).setPreferredWidth(150);
                 //    resultTable.setRowSorter(sorter);
                 //    imageDisplayClass.findAllMember();
-                    setSize(1300, 550);
-                    setLocation(200, 100);
+                    setSize(1200, 550);
+                    setLocation(100, 100);
                 }
             });
             print.addActionListener(new ActionListener() {
@@ -2007,10 +2073,6 @@ import java.util.List;
                     add(new JScrollPane(resultTable), "Center");
                     TableRowSorter<TableModel> sorter = new TableRowSorter(churchService);
                     resultTable.setRowSorter(sorter);
-                     /*} catch (SQLException sql) {
-                         sql.printStackTrace();*/
-                    // }
-
                     setSize(1300, 600);
                     setLocation(100, 10);
                 }
@@ -2023,7 +2085,7 @@ import java.util.List;
 
     class DisplayTable extends JDialog {
         private JPanel panel;
-        private JLabel display;
+        private JLabel displayBirthDay;
         private JButton submit;
         private JLabel noting;
         private JButton printNumber;
@@ -2037,11 +2099,11 @@ import java.util.List;
             panel = new JPanel();
             noting = new JLabel();
             submit = new JButton("VIEW");
-            display = new JLabel("Click to View Birthday Of Workers");
+            displayBirthDay = new JLabel("Click to View Birthday Of Members");
             printNumber = new JButton("SAVE NUMBER");
             printNumber.setEnabled(false);
             panel.setLayout(new FlowLayout());
-            panel.add(display);
+            panel.add(displayBirthDay);
             panel.add(noting);
             panel.add(submit);
             panel.add(printNumber);
@@ -2052,19 +2114,11 @@ import java.util.List;
 
                     birthDayList =churchService.getBirthDaysWorkerList();
                     int size = birthDayList.size();
-                    System.out.println(size);
                     objects = new Object[size][8];
                           for(int i =0; i<size; i++)
                     {
-                        BufferedImage bufferedImage = null;
-                        try {
-                            bufferedImage = ImageIO.read(new File(birthDayList.get(i).getMemberPhoto()));
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_SMOOTH);
                         JLabel image = new JLabel();
-                        image.setIcon( new ImageIcon(images, ""));
+                        image.setIcon( new javax.swing.ImageIcon(birthDayList.get(i).getMemberPhoto()));
                      //   }
                         objects[i][0] = image;
 
@@ -2083,13 +2137,10 @@ import java.util.List;
                     imageRendererClass = new ImageRendererClass();
                     imageRendererClass.setSetTable(resultTable);
                     imageRendererClass.setString("member_photo");
-                    add(new JScrollPane(resultTable), "Center");
                     resultTable.setRowHeight(120);
                     resultTable.getColumn("member_photo").setCellRenderer( imageRendererClass);
                     resultTable.setCellSelectionEnabled(true);
                     resultTable.getColumnModel().getColumn(0).setPreferredWidth(150);
-                    add(new JScrollPane(resultTable), "Center");
-
                     printNumber.setEnabled(true);
                 }
             });
@@ -2122,8 +2173,8 @@ import java.util.List;
                     }
                 }
             });
-            setSize(1400, 550);
-            setLocation(50, 150);
+            setSize(1200, 650);
+            setLocation(50, 50);
         }
     }
 
