@@ -15,15 +15,5 @@ public class FirstTimer {
 
   //  @Id
     private int serialNo;
-/*    private String firstName;
-    private String lastName;
-    private String sex;
-    private String marry;
-    private String address;
-    private String phone;
-    private String dateBorn;
-    private String emailAddress;*/
-   // private Integer attendance;
-    // private int total = 0;
     private String loginId;
 }

@@ -15,7 +15,9 @@ public class Department {
 
     @Id
     private String headName;
+
     private String departName;
+
     private int totalMember;
 
 

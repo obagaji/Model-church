@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-//import org.springframework.data.annotation.Id;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,12 +13,18 @@ import lombok.NoArgsConstructor;
 public class ServiceAttendance
 {
         @Id
-       private String serviceDate;
-       private  String minist;
-       private int attendanceNumber;
-       private  String church_service;
-       private int attendanceFemale;
-       private int attendanceMale;
-       private int attendanceChildren;
+        private String serviceDate;
+
+        private  String minist;
+
+        private int attendanceNumber;
+
+        private  String church_service;
+
+        private int attendanceFemale;
+
+        private int attendanceMale;
+
+        private int attendanceChildren;
 
 }

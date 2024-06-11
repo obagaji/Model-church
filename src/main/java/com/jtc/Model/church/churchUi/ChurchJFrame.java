@@ -5,6 +5,7 @@ package com.jtc.Model.church.churchUi;
  * @author JTC CONTRACTS SERVICE NIGERIA LIMITED
  * @version 1.2
  */
+
 import com.jtc.Model.church.churchEntity.*;
 import com.jtc.Model.church.churchRepo.QueryImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +17,12 @@ import javax.swing.*;
 import javax.swing.JTable.PrintMode;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.*;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.awt.print.PrinterException;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -31,198 +31,181 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /*
-* The springframework stereotype annotation will help spring to pick the class and includes it by generating a bean for it.
-* Since the application is a desktop application we have to extends the JFrame class to be able to make use of the feature available.
+* The springframework stereotype annotation will help spring to pick the class and includes
+* it by generating a bean for it.
+* Since the application is a desktop application we have to extends the JFrame class
+* to be able to make use of the feature available.
 *
 *
 * */
 @Service
  public class ChurchJFrame extends JFrame {
 
-    private JMenu searchMenu, attendanceG, about, admin, menu;
-    private JTextField sfield, delsfield, firstField;
-    private JTextField ffield;
-    private JTextField Adfield;
-    private JTextField idfield;
-    private JTextField EnterID;
-    private JTextField phoneNum;
-    private JTextField names;
-    private JMenuItem Edit, Allpeople, Name, addWork, newMenu, Delete, Login, display, WorkerItem, NonWorkerItem,
-            attendans, WAttendance, MAttendance, official,reset, us;
-    private JMenuItem TotalActivity, locateActivity, account, exit;
-    private JMenuItem firstTimeResponse;
-    private JMenuItem firstTime;
-    private JMenuItem addFirstTimer;
-    private JMenuItem acc;
-    private JMenuItem StaffOfice;
-    private JTextField lofield;
+    private final JMenu searchMenu, attendanceG, about, admin, menu;
+
+    private JMenuItem edit, allpeople, menuName, addWork, newMenu, delete, login, display, workerItem, nonWorkerItem,
+            attendans, wAttendance, mAttendance, official,reset, us;
+
+    private JMenuItem totalActivity, locateActivity, account, exit,acc,StaffOfice,
+            firstTimeResponse,addFirstTimer,firstTime;
+
     private JLabel welcomeLabel;
-    private JLabel DONLabel;
-    private JLabel loginLabel;
+
+    private JLabel dONLabel;
+
     private JLabel displayL;
-    private JLabel workerFlabel;
-    private JLabel workerFirstLabel;
-    private JLabel workerPlabel;
-    private JLabel workerAlabel;
-    private JLabel workerIdlabel;
-    private JLabel workersexlabel;
-    private JLabel workerStatusLabel;
-    private JTextField workerffield,workerIdfield, workerAfield, workerPfield, workerdateofbirthfield, depart, position, idText,
-             workerFirstfield, depart1, depart2;
-    private JLabel idLabel;
-    private JLabel positionLabel;
-    private JLabel departLabel, depart1Label, depart2Label;
-    private Member searchMember;
+
     private JTable resultTable;
-    private JButton submit;
-    private JButton searchButton;
+
     private Font font;
-    private JTextArea displayArea;
+
     private JLabel label;
-    private JButton print;
-    private Timer animationTimer;
-   // private final int ANIMATION_DELAY = 1500;
+
     private String name;
 
-    private JLabel display1,display2,display3;
     private static ArrayList<String> ARRAYLIST = new ArrayList();
-    private static ArrayList<String> LOCALARRAY = new ArrayList();
-    private static JList<String> LISTSTREET;
-    private static JList<String> LISTAREA;
-    private static JPasswordField TEXTPASSWORD;
 
-//    private ImageDisplayClass imageDisplayClass;
+    private static ArrayList<String> LOCALARRAY = new ArrayList();
 
     @Autowired
     QueryImplementation churchService;
+
+    @Autowired
     private ImageRendererClass imageRendererClass;
 
-    private NonWorker nonWorker;
-    private Member member;
-    private Workers dataWorkers;
-    private DateClass dateClass;
-
     public ChurchJFrame()  {
-        super("                                  RCCG NEW CONVENENT MODEL PARISH         ");
+        super("                                  NEW COVENANT MODEL PARISH         ");
 
         JMenuBar bar = new JMenuBar();
+
         bar.setOpaque(true);
+
         bar.setBackground(Color.BLUE);
+        welcomeLabel = new JLabel();
+// menuItem initialization
+        exit = new JMenuItem("EXIT");
+        firstTime = new JMenuItem("VIEW FIRST TIME");
+        menuName = new JMenuItem("NAME");
+        StaffOfice = new JMenuItem("STAFF");
+        us = new JMenuItem("INFO");
+        edit = new JMenuItem("EDIT");
+        edit.setMnemonic('E');
+        totalActivity = new JMenuItem("PROGRAM ACTIVITY");
+        attendans = new JMenuItem("ATTENDANCE");
+        mAttendance = new JMenuItem("MEMBER ATTENDANCE");
+        wAttendance = new JMenuItem("WORKER ATTENDANCE");
+        locateActivity = new JMenuItem("PROGRAM/SUNDAY SERVICE");
+        account = new JMenuItem("MAINTENENCE");
+        official = new JMenuItem("OFFICIAL");
+        addWork = new JMenuItem(" ADD WORKER");
+        display = new JMenuItem("DISPLAY BIRTHDAY");
+        display.setMnemonic('D');
+        reset = new JMenuItem("RESET");
+        delete = new JMenuItem(" DELETE");
+        newMenu = new JMenuItem(" ADD MEMBER");
+        menuName.setMnemonic('D');
+        acc = new JMenuItem("VIEW MAINTENANCE");
+        acc.setMnemonic('M');
+        addFirstTimer = new JMenuItem("FIRST  TIMERS");
+        workerItem = new JMenuItem("WORKER");
+        workerItem.setMnemonic('W');
+        allpeople = new JMenuItem("ALL");
+        allpeople.setMnemonic('A');
+        nonWorkerItem = new JMenuItem(" MEMBER - NON WORKERS");
+        nonWorkerItem.setMnemonic('M');
+        login = new JMenuItem("LOGIN");
+        login.setMnemonic('L');
+        firstTimeResponse = new JMenuItem("FIRST  TIMERS RESPONSE");
+
+
         menu = new JMenu("VIEW");
         menu.setMnemonic('V');
-        about = new JMenu("ABOUT");
-        firstTime = new JMenuItem("VIEW FIRST TIME");
-        StaffOfice = new JMenuItem("STAFF");
-        attendanceG = new JMenu("  ATTENDANCE");
-        Font var10003 = font;
-        Font var10004 = font;
         font = new Font("SansSerif", 2, 12);
         menu.setFont(font);
         menu.setFocusPainted(false);
-        print = new JButton("PRINT");
         menu.setText(" VIEW");
+        menu.addSeparator();
+        menu.add(edit);
+        menu.addSeparator();
+        menu.add(workerItem);
+        menu.addSeparator();
+        menu.add(allpeople);
+        menu.addSeparator();
+        menu.add(nonWorkerItem);
+        menu.addSeparator();
+        menu.add(acc);
+        menu.addSeparator();
+        menu.add(locateActivity);
+
+
+        about = new JMenu("ABOUT");
         about.setText("  ABOUT");
         about.setMnemonic('B');
-        us = new JMenuItem("INFO");
         about.add(us);
         about.setFont(font);
         about.add(StaffOfice);
         StaffOfice.setMnemonic('S');
-        Name = new JMenuItem("NAME");
-        Name.setMnemonic('N');
-      //  menu.add(Name);
-        menu.addSeparator();
-        Edit = new JMenuItem("EDIT");
-        Edit.setMnemonic('E');
-        menu.add(Edit);
-        menu.addSeparator();
-        acc = new JMenuItem("VIEW MAINTENANCE");
-        acc.setMnemonic('M');
-        addFirstTimer = new JMenuItem("FIRST  TIMERS");
-        WorkerItem = new JMenuItem("WORKER");
-        firstTimeResponse = new JMenuItem("FIRST  TIMERS RESPONSE");
-        WorkerItem.setMnemonic('W');
-        menu.add(WorkerItem);
-        menu.addSeparator();
-        Allpeople = new JMenuItem("ALL");
-        Allpeople.setMnemonic('L');
-        menu.add(Allpeople);
-        menu.addSeparator();
-        NonWorkerItem = new JMenuItem(" MEMBER - NON WORKERS");
-        NonWorkerItem.setMnemonic('M');
-        menu.add(NonWorkerItem);
-        menu.addSeparator();
-        displayArea = new JTextArea(3, 10);
-        menu.add(acc);
-        menu.addSeparator();
-        DONLabel = new JLabel();
-        displayL = new JLabel();
-        displayL.setHorizontalAlignment(0);
-        setLayout(new BorderLayout());
-        label = new JLabel();
+
+
+        attendanceG = new JMenu("  ATTENDANCE");
+        attendanceG.add(attendans);
+        attendanceG.addSeparator();
+        attendanceG.add(mAttendance);
+
+
         searchMenu = new JMenu();
         searchMenu.setText("LOGIN");
         searchMenu.setFont(font);
-        exit = new JMenuItem("EXIT");
-        searchMenu.setIcon(new javax.swing.ImageIcon("C:\\church\\rccgsmall.jpg"));
+        searchMenu.setIcon(new ImageIcon("C:\\church\\rccgsmall.jpg"));
         searchMenu.addSeparator();
-        DONLabel.setIcon(new javax.swing.ImageIcon("C:\\church\\NCMP1.jpg"));
-        DONLabel.setHorizontalAlignment(0);
-        DONLabel.setIgnoreRepaint(true);
-        Login = new JMenuItem("LOGIN");
-        Login.setMnemonic('L');
-        searchMenu.add(Login);
+        searchMenu.add(login);
         searchMenu.addSeparator();
-        display = new JMenuItem("DISPLAY BIRTHDAY");
-        display.setMnemonic('D');
         searchMenu.add(display);
         searchMenu.addSeparator();
-        reset = new JMenuItem("RESET");
         searchMenu.add(reset);
         searchMenu.addSeparator();
         searchMenu.add(exit);
-        bar.add(searchMenu);
-        bar.add(menu);
+
+
         admin = new JMenu();
-        admin.isBorderPainted();
         admin.setBorderPainted(true);
-        var10003 = font;
-        var10004 = font;
         font = new Font("SansSerif", 2, 12);
         admin.setFont(font);
         admin.setText(" ADMIN");
         admin.setMnemonic('M');
         admin.setBackground(Color.red);
-        Delete = new JMenuItem(" DELETE");
-        Delete.setMnemonic('D');
-        admin.add(Delete);
+        delete.setMnemonic('D');
+        admin.add(delete);
         admin.addSeparator();
-        TotalActivity = new JMenuItem("PROGRAM ACTIVITY");
-        attendans = new JMenuItem("ATTENDANCE");
-        MAttendance = new JMenuItem("MEMBER ATTENDANCE");
-        WAttendance = new JMenuItem("WORKER ATTENDANCE");
-        locateActivity = new JMenuItem("PROGRAM/SUNDAY SERVICE");
-        menu.add(locateActivity);
-        account = new JMenuItem("MAINTENENCE");
-        attendanceG.add(attendans);
-        attendanceG.addSeparator();
-        attendanceG.add(MAttendance);
-        addWork = new JMenuItem(" ADD WORKER");
         addWork.setMnemonic('A');
         admin.add(addWork);
         admin.addSeparator();
-        newMenu = new JMenuItem(" ADD MEMBER");
         newMenu.setMnemonic('N');
         admin.add(newMenu);
         admin.addSeparator();
-        admin.add(TotalActivity);
+        admin.add(totalActivity);
         admin.addSeparator();
-        official = new JMenuItem("OFFICIAL");
         admin.add(official);
         admin.addSeparator();
         admin.add(account);
+
+
+        dONLabel = new JLabel();
+        displayL = new JLabel();
+        displayL.setHorizontalAlignment(0);
+        setLayout(new BorderLayout());
+        label = new JLabel();
+
+        dONLabel.setIcon(new ImageIcon("C:\\church\\NCMP1.jpg"));
+        dONLabel.setHorizontalAlignment(0);
+        dONLabel.setIgnoreRepaint(true);
+
+
+        bar.add(searchMenu);
+        bar.add(menu);
         bar.add(attendanceG);
         bar.add(admin);
         bar.add(about);
@@ -231,148 +214,143 @@ import java.util.List;
         String myString = DateFormat.getDateTimeInstance(1, 1).format(new Date());
         label.setText(myString);
         setJMenuBar(bar);
-        EnterID = new JTextField(6);
+
         us.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 InformationDialog frame = new InformationDialog((JFrame) null);
                 frame.setVisible(true);
             }
         });
+
         exit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 dispose();
             }
         });
-     /*   Name.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                SearchDialog searching = new SearchDialog((JFrame) null);
-                searching.setVisible(true);
-            }
-        });*/
+
          locateActivity.addActionListener(new ActionListener() {
              public void actionPerformed(ActionEvent event) {
                  DateChurchAttendanceDialog Jrame = new DateChurchAttendanceDialog((JFrame) null);
                  Jrame.setVisible(true);
              }
          });
-        account.addActionListener(new ActionListener() {
+
+         account.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 MaintananceDialog Jrame = new MaintananceDialog((JFrame) null);
                 Jrame.setVisible(true);
             }
         });
+
          acc.addActionListener(new ActionListener() {
              public void actionPerformed(ActionEvent event) {
                  ViewMaintenanceDialog Jrame = new ViewMaintenanceDialog((JFrame) null);
                  Jrame.setVisible(true);
              }
          });
-        Allpeople.addActionListener(new ActionListener() {
+
+         allpeople.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 AllDialog allediting = new AllDialog((JFrame) null);
                 allediting.setVisible(true);
             }
         });
-        addWork.addActionListener(new ActionListener() {
+
+         addWork.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 AddWorkerDialog editing = new AddWorkerDialog((JFrame) null);
                 editing.setVisible(true);
             }
         });
-        Edit.addActionListener(new ActionListener() {
+
+         edit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 EditDialog editing = new EditDialog((JFrame) null);
                 editing.setVisible(true);
             }
         });
-        WorkerItem.addActionListener(new ActionListener() {
+
+         workerItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 WDialog worker = new WDialog((JFrame) null);
                 worker.setVisible(true);
             }
         });
-        Delete.addActionListener(new ActionListener() {
+
+         delete.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 DelDialog del = new DelDialog((JFrame) null);
                 del.setVisible(true);
             }
         });
-        reset.addActionListener(new ActionListener() {
+
+         reset.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 for (DateClass dateClass1: churchService.getAllDateClass())
                 {
-
-                    churchService.updateAllDateClass(dateClass1.getIdMember(),"ABSENCE");
+                    churchService.updateAllDateClass(dateClass1.getIdmember(),"ABSENCE");
                 }
                 JOptionPane.showMessageDialog(null,"OK","RESET",JOptionPane.INFORMATION_MESSAGE);
             }
         });
-        TotalActivity.addActionListener(new ActionListener() {
+
+         totalActivity.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 SundayActivityDialog frame = new SundayActivityDialog((JFrame) null);
                 frame.setVisible(true);
             }
         });
-        attendans.addActionListener(new ActionListener() {
+
+         attendans.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Attendance tend = new Attendance((JFrame) null);
                 tend.setVisible(true);
             }
         });
-        MAttendance.addActionListener(new ActionListener() {
+
+         mAttendance.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 DateAttendanceMemberDialog tend = new DateAttendanceMemberDialog((JFrame) null);
                 tend.setVisible(true);
             }
         });
-        official.addActionListener(new ActionListener() {
+
+         official.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 Display frame = new Display((JFrame) null);
                 frame.setVisible(true);
             }
         });
-        newMenu.addActionListener(new ActionListener() {
+
+         newMenu.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 MemberDialog member = new MemberDialog((JFrame) null);
                 member.setVisible(true);
             }
         });
-        Login.addActionListener(e -> {
+
+         login.addActionListener(e -> {
             LogDialog lin = new LogDialog((JFrame) null);
             lin.setVisible(true);
         });
-        NonWorkerItem.addActionListener(e -> {
+
+        nonWorkerItem.addActionListener(e -> {
             NonDialog non = new NonDialog((JFrame) null);
             non.setVisible(true);
         });
+
         display.addActionListener(e -> {
             DisplayTable dis = new DisplayTable((JFrame) null);
             dis.setVisible(true);
         });
-        idText = new JTextField(5);
-        position = new JTextField(5);
-        depart = new JTextField(10);
-        idLabel = new JLabel("         ID Number");
-        positionLabel = new JLabel("        Position");
-        departLabel = new JLabel("       Department");
-        depart1 = new JTextField(10);
-        depart1Label = new JLabel("       Department");
-        depart2 = new JTextField(10);
-        depart2Label = new JLabel("       Department");
-        welcomeLabel = new JLabel();
-        departLabel.setBorder(BorderFactory.createTitledBorder(""));
-        idLabel.setBorder(BorderFactory.createTitledBorder(""));
-        positionLabel.setBorder(BorderFactory.createTitledBorder(""));
-        depart2Label.setBorder(BorderFactory.createTitledBorder(""));
-        depart1Label.setBorder(BorderFactory.createTitledBorder(""));
-        welcomeLabel.setBorder(BorderFactory.createTitledBorder(""));
-        var10003 = font;
-        var10004 = font;
+
+    //    welcomeLabel = new JLabel();
+    //    welcomeLabel.setBorder(BorderFactory.createTitledBorder(""));
         font = new Font("SansSerif", 2, 18);
         welcomeLabel.setFont(font);
         welcomeLabel.setText("                                        \n RCCG      \n NEW     COVENANT      \n   MODEL     PARISH        ");
         add(welcomeLabel, "South");
-        add(DONLabel, "Center");
+        add(dONLabel, "Center");
         add(displayL, "North");
         setDefaultCloseOperation(3);
         setSize(1600, 1000);
@@ -382,13 +360,10 @@ import java.util.List;
         Filephone writer = new Filephone();
         writer.writeUsingBufferedWriter(phone);
     }
-    static {
-        LISTSTREET = new JList(ARRAYLIST.toArray());
-        LISTAREA = new JList(LOCALARRAY.toArray());
-        JTable jTable;
-        TEXTPASSWORD = new JPasswordField(10);
-    }
+
     private class TimerClass implements ActionListener {
+
+        private JLabel display1,display2,display3;
         private TimerClass() {
         }
         public void actionPerformed(ActionEvent action) {
@@ -398,19 +373,15 @@ import java.util.List;
             displayL.setText("");
         }
     }
-    private class ImageTimer {
-        private int indexPostion;
-        private ImageTimer() {
-        }
-        public int ArrayLocationIndex(int index) {
-            return indexPostion = index;
-        }
-    }
-    class DelDialog extends JDialog {
+
+    class DelDialog extends JDialog
+    {
         private JPanel pan;
         private JPanel pan2;
         private JLabel delField;
-        public DelDialog(JFrame delFrame) {
+        private JTextField delsfield;
+        public DelDialog(JFrame delFrame)
+        {
             super(delFrame, "  DELETE   ", true);
             setLayout(new BorderLayout());
             pan = new JPanel();
@@ -427,7 +398,7 @@ import java.util.List;
             delsfield = new JTextField(15);
             pan.add(delsfield);
             JButton subm = new JButton("SUBMIT");
-            subm.setIcon(new javax.swing.ImageIcon("C:\\church\\windows-error.png"));
+            subm.setIcon(new ImageIcon("C:\\church\\windows-error.png"));
             pan2.add(subm);
             JButton canc = new JButton("CANCEL");
             add(pan, "Center");
@@ -435,11 +406,15 @@ import java.util.List;
             final String value = JOptionPane.showInputDialog("Enter Worker OR Member as choice to delete");
             subm.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    if (value.equalsIgnoreCase("Member")) {
+                    if (value.equalsIgnoreCase("Member"))
+                    {
                         churchService.deleteMember(delsfield.getText());
                         JOptionPane.showMessageDialog((Component) null, "OERATION  SUCCESSFUL");
                         delsfield.setText(" ");
-                    } else if (value.equalsIgnoreCase("worker")) {
+                    }
+
+                    else if (value.equalsIgnoreCase("worker"))
+                    {
                         churchService.deleteWorker(delsfield.getText());
                         JOptionPane.showMessageDialog((Component) null, "OERATION  SUCCESSFUL");
                         delsfield.setText(" ");
@@ -455,7 +430,18 @@ import java.util.List;
             setLocation(300, 350);
         }
     }
-    class MemberDialog extends JDialog {
+
+    class MemberDialog extends JDialog
+    {
+        private JLabel workerFlabel;
+        private JLabel workerFirstLabel;
+        private JLabel workerPlabel;
+        private JLabel workerAlabel;
+        private JLabel workerIdlabel;
+        private JLabel workersexlabel;
+
+        private JLabel workerStatusLabel;
+        private Member member;
         private JPanel pan;
         private final JLabel workerStreetLabel;
         private final JButton workerEmail;
@@ -471,8 +457,12 @@ import java.util.List;
         private int present = 1;
         private int absent = 0;
         private String start = "Yes";
+        private NonWorker nonWorker;
+        private JTextField  workerIdfield,workerAfield,workerPfield, workerFirstfield,workerdateofbirthfield;
+        private JTextField workerFfield;
         private DateClass dateClass;
-        public MemberDialog(final JFrame memFrame) {
+        public MemberDialog(final JFrame memFrame)
+        {
             super(memFrame, "    ADD MEMBERSHIP          ", true);
             setLayout(new BorderLayout());
             pan = new JPanel();
@@ -480,7 +470,7 @@ import java.util.List;
             pan.setLayout(new GridLayout(10, 2, 5, 5));
             workerFlabel = new JLabel();
             workerFlabel.setText("          LASTNAME");
-            workerffield = new JTextField(15);
+            workerFfield = new JTextField(15);
             workerFirstLabel = new JLabel("          FIRSTNAME");
             workerFirstfield = new JTextField(20);
             workerDlabel = new JButton();
@@ -517,10 +507,10 @@ import java.util.List;
             workerEmail.setBorder(BorderFactory.createTitledBorder(""));
             workerStatusLabel.setBorder(BorderFactory.createTitledBorder(""));
             JButton sub = new JButton("SUBMIT");
-            sub.setIcon(new javax.swing.ImageIcon("C:\\church\\Save16.gif"));
+            sub.setIcon(new ImageIcon("C:\\church\\Save16.gif"));
             JButton cant = new JButton("CANCEL");
             pan.add(workerFlabel);
-            pan.add(workerffield);
+            pan.add(workerFfield);
             pan.add(workerFirstLabel);
             pan.add(workerFirstfield);
             pan.add(workerDlabel);
@@ -543,16 +533,18 @@ import java.util.List;
             workerIdfield.setEditable(true);
             add(pan, "Center");
 
-            workerEmail.addActionListener(new ActionListener() {
+            workerEmail.addActionListener(new ActionListener()
+            {
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(ActionEvent e)
+                {
                     String fileType = "";
                     JFileChooser jFileChooser = new JFileChooser();
                     jFileChooser.setFileSelectionMode(JFileChooser.APPROVE_OPTION);
                     int result = jFileChooser.showOpenDialog(null);
                     File file = jFileChooser.getSelectedFile();
 
-                    if((file==null) || file.getName().equals(""))
+                    if((Objects.isNull(file)) || file.getName().equals(""))
                     {
                         emailField.setText("C:\\church\\rccgsmall1.jpg");
                     }
@@ -560,10 +552,15 @@ import java.util.List;
                         emailField.setText(file.getAbsolutePath());
 
                     }
+                    // set a default file name
                     catch (NullPointerException nullPointerException)
                     {
                         emailField.setText("C:\\church\\rccgsmall1.jpg");
                     }
+
+/*
+* This block of code gets the file type from the string that was passed to it.
+* */
 
                     if (emailField.getText().endsWith("jpg")) {
                          fileType = "jpg";
@@ -577,12 +574,14 @@ import java.util.List;
                     else if (emailField.getText().endsWith("png")) {
                          fileType = "png";
                     }
+
                     BufferedImage bufferedImage = null;
                     try {
                             bufferedImage = ImageIO.read(new File(emailField.getText()));
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
+// the image is sized and save to file. the file location is provided.
                     Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_FAST);
                     File saveFile = new File("C:\\church\\" + file.getName()+"." + fileType);
                     try {
@@ -618,9 +617,9 @@ import java.util.List;
             sub.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     String formatedDate = workerdateofbirthfield.getText().substring(0, 5);
-                    DateFormat dateFormat = new SimpleDateFormat("dd-MM-YYYY");
+                    DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
                     String loginDates = dateFormat.format(new Date());
-                    member = new Member(workerIdfield.getText(), mf, workerffield.getText(), workerFirstfield.getText(),
+                    member = new Member(workerIdfield.getText(), mf, workerFfield.getText(), workerFirstfield.getText(),
                             workerAfield.getText(),formatedDate,workerPfield.getText(),   sm,
                             1, loginDates, loginDates, emailField.getText());
                     String stringID = workerIdfield.getText();
@@ -635,7 +634,7 @@ import java.util.List;
                     }
 
                     workerIdfield.setText("");
-                    workerffield.setText("");
+                    workerFfield.setText("");
                     workerAfield.setText("");
                     workerPfield.setText("");
                     workerdateofbirthfield.setText((new DatePicker(memFrame)).getDefaultDate());
@@ -646,11 +645,11 @@ import java.util.List;
                     emailField.setText("");
                     workerSex.setSelectedIndex(0);
                     workerStatus.setSelectedIndex(0);
-                    workerffield.setEditable(true);
+                    workerFfield.setEditable(true);
                     workerAfield.setEditable(true);
                     workerPfield.setEditable(true);
                     workerFirstfield.setEditable(true);
-                    //streetField.setEditable(true);
+
                 }
             });
             cant.addActionListener(new ActionListener() {
@@ -659,7 +658,7 @@ import java.util.List;
                 }
             });
             workerIdfield.setText("NC");
-            workerffield.setText("");
+            workerFfield.setText("");
             workerAfield.setText("");
             workerPfield.setText("");
             workerdateofbirthfield.setText((new DatePicker(memFrame)).getDefaultDate());
@@ -668,11 +667,10 @@ import java.util.List;
             workerFirstfield.setText("");
             streetField.setText("");
             emailField.setText("");
-            workerffield.setEditable(true);
+            workerFfield.setEditable(true);
             workerAfield.setEditable(true);
             workerPfield.setEditable(true);
             workerFirstfield.setEditable(true);
-            //  streetField.setEditable(true);
             emailField.setEditable(true);
             setSize(400, 500);
             setLocation(580, 220);
@@ -680,6 +678,9 @@ import java.util.List;
     }
 
     class WDialog extends JDialog {
+
+        private JButton print;
+
         private JPanel onePanel;
         private JTextField text;
         private JLabel label;
@@ -689,6 +690,7 @@ import java.util.List;
             setLayout(new BorderLayout());
             JPanel panel = new JPanel();
             JPanel panels = new JPanel();
+            print = new JButton("PRINT");
             onePanel = new JPanel();
             onePanel.setLayout(new BorderLayout());
             panel.setLayout(new GridLayout(1, 2, 1, 1));
@@ -734,27 +736,53 @@ import java.util.List;
     }
 
     class AddWorkerDialog extends JDialog {
+        private Workers dataWorkers;
+        private NonWorker nonWorker;
         private JPanel panel;
+
+        private JLabel positionLabel;
+
+        private JTextField  position;
+
         private JPanel workers;
+
         private JButton submit;
+
+        private JTextField depart1;
+
+        private JTextField depart2;
+
+        private JTextField idText;
+        private JLabel idLabel;
+        private JTextField depart;
+
         private JButton close;
 // when creating a department object, the parameters required are String departHead, String departName,
-// int total member. therefor all this information shall be retrived from the data base. A condition araises
-// where the department does not have any object/information in the data base, an initail value will be passed as default
-
+// int total member. therefor all this information shall be retried from the data base. A condition arises
+// where the department does not have any object/information in the data base, an initial value will be passed as default
         private ArrayList<String> departmentSet = new ArrayList<>();
         private String[] departArray = new String[departmentSet.size()];
 
-        public AddWorkerDialog(JFrame frame) {
+        private JLabel departLabel, depart1Label, depart2Label;
+
+        public AddWorkerDialog(JFrame frame)
+        {
             super(frame, "    ADD TO WORK FORCE        ", null);
             setLayout(new BorderLayout());
             panel = new JPanel();
             panel.setLayout(new GridLayout(5, 2, 4, 2));
+            depart1 = new JTextField(10);
             workers = new JPanel();
+            idLabel = new JLabel("         ID Number");
+            departLabel = new JLabel("       Department");
+            depart1Label = new JLabel("       Department");
+            depart2Label = new JLabel("       Department");
             workers.setLayout(new FlowLayout());
             submit = new JButton("SUBMIT");
-            submit.setIcon(new javax.swing.ImageIcon("C:\\church\\Save16.gif"));
+            depart2 = new JTextField(10);
+            submit.setIcon(new ImageIcon("C:\\church\\Save16.gif"));
             close = new JButton("CLOSE");
+            positionLabel = new JLabel("        Position");
             departLabel.setBorder(BorderFactory.createTitledBorder(""));
             depart2Label.setBorder(BorderFactory.createTitledBorder(""));
             idLabel.setBorder(BorderFactory.createTitledBorder(""));
@@ -776,23 +804,27 @@ import java.util.List;
             add(workers, "South");
             submit.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event) {
-                    if (depart.getText() != null || !depart.getText().equalsIgnoreCase("")) {
+                    if (depart.getText() != null || !depart.getText().equalsIgnoreCase(""))
+                    {
                         departmentSet.add(depart.getText());
                     }
-                    if (depart1.getText() != null || !depart1.getText().equalsIgnoreCase("")) {
+
+                    if (depart1.getText() != null || !depart1.getText().equalsIgnoreCase(""))
+                    {
                         departmentSet.add(depart1.getText());
                     }
 
-                    if (depart2.getText() != null || !depart2.getText().equalsIgnoreCase("")) {
+                    if (depart2.getText() != null || !depart2.getText().equalsIgnoreCase(""))
+                    {
                         departmentSet.add(depart2.getText());
                     }
 
                     departArray = departmentSet.toArray(departArray);
                     StringBuffer arrayBuffer = new StringBuffer();
                     nonWorker = churchService.findNonWorkerById(idText.getText());
-                    for (int i = 0; i < departArray.length; i++) {
+                    for (int i = 0; i < departArray.length; i++)
+                    {
                         arrayBuffer.append(departArray[i]);
-
                     }
 // create a worker object, and then added to the database by calling the method addWorker of QueryImplementation class
                     dataWorkers = new Workers(idText.getText(), position.getText(), nonWorker.getJoinDate(), arrayBuffer.toString());
@@ -832,35 +864,25 @@ import java.util.List;
             super(frame, "      VIEW  ATTENDANCE PRESENT/  ABSENCE  IN CHURCH       ", null);
             setLayout(new BorderLayout());
             panel = new JPanel();
-            //locat = new JButton("  ENTER DATE");
-            // locat.setToolTipText("enter the date in the format dd-MM-YYYY");
             dateText = new JTextField(10);
-            // locate2 = new JLabel("");
             panel.setLayout(new GridLayout(2, 2, 1, 1));
             submit = new JButton("VIEW ALL");
             submit.setToolTipText("CLICK TO VIEW ALL");
-            // close = new JButton("MEMBER");
-            //lose.setToolTipText("ENTER DATE THEN CLICK TO VIEW");
             print = new JButton("PRINT");
-            //   panel.add(locat);
-
             panel.add(new JLabel(" PRESENT/ABSENCE"));
             panel.add(dateText);
             panel.add(submit);
-            //panel.add(close);
             panel.add(print);
             add(panel, "South");
             submit.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event) {
                     if (dateText.getText() != null || !dateText.getText().equalsIgnoreCase("")) {
-                    //    if(dateText.getText().equalsIgnoreCase("presence"))
                         churchService.selectOutSunday(dateText.getText());
                         resultTable = new JTable(churchService);
                         add(new JScrollPane(resultTable), "Center");
                         TableRowSorter<TableModel> sorter = new TableRowSorter(churchService);
                         resultTable.setRowSorter(sorter);
                     }
-                    // to display the return valued.
                     setSize(1200, 750);
                     setLocation(100, 100);
                 }
@@ -872,9 +894,7 @@ import java.util.List;
                     try {
                         resultTable.print(PrintMode.FIT_WIDTH, headerFormat, footerFormat,
                                 true, null, true);
-                    } catch (HeadlessException sql) {
-                        sql.printStackTrace();
-                    } catch (PrinterException sql) {
+                    } catch (HeadlessException | PrinterException sql) {
                         sql.printStackTrace();
                     }
                 }
@@ -886,7 +906,12 @@ import java.util.List;
 
     class LogDialog extends JDialog {
 
+        private Timer animationTimer;
         private Member displayNames;
+
+        private JLabel display1,display2,display3;
+
+        private JTextField lofield;
 
         public LogDialog(JFrame Lframe) {
             super(Lframe, "         WELCOME TO RCCG NEW CONVENENT MODEL PARISH        LOG IN ", true);
@@ -902,7 +927,7 @@ import java.util.List;
             display2 = new JLabel("");
             display3 = new JLabel("");
             pane.setLayout(new BorderLayout());
-            log.setIcon(new javax.swing.ImageIcon("C:\\church\\rccgsmall.jpg"));
+            log.setIcon(new ImageIcon("C:\\church\\rccgsmall.jpg"));
             showPanel.add(display1);
             showPanel.add(display2);
             showPanel.add(display3);
@@ -925,11 +950,10 @@ import java.util.List;
             add(new JLabel("  "), "West");
             log.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    DateFormat dt = new SimpleDateFormat("dd-MM-YYYY");
+                    DateFormat dt = new SimpleDateFormat("dd-MM-yyyy");
                     String dateString = dt.format(new Date());
                     name = lofield.getText().trim();// name here is the login id of the user.
                     try {
-
 
                         if (churchService.displayName(name)) {
 
@@ -940,22 +964,17 @@ import java.util.List;
                                 JOptionPane.showMessageDialog(null, "You have Logged In Before");
                                 lofield.setText("");
                             }
-                            //  logMember = true;
-                            else// if (!churchService.getCurrentDate(nameId).equalsIgnoreCase(dateString))
+
+                            else
                             {
                                 churchService.updateCurrentDateInfo(dateString,name);
                                 churchService.updateAttendanceOfMembers(name);
                                 churchService.updateAttendance(name);
                                 churchService.updateInchurchValue(name);
                                 lofield.setText("");
-                                if (animationTimer == null) {
-                                    //  try {
-
+                                if (animationTimer == null)
+                                {
                                     displayNames = checkMember.get(0);
-                         /*} catch (NoValueFound ex) {
-                             throw new RuntimeException(ex);
-                         }*/
-
                                     if (displayNames != null) {
                                         display1.setText(displayNames.getFirstName());
                                         display2.setText(displayNames.getLastName());
@@ -966,11 +985,8 @@ import java.util.List;
                                     animationTimer = new Timer(1500, new TimerClass());
                                     animationTimer.start();
                                 } else if (animationTimer.isRunning()) {
-                                    //   try {
+
                                     displayNames = checkMember.get(0);
-                         /*} catch (NoValueFound ex) {
-                             throw new RuntimeException(ex);
-                         }*/
                                     if (displayNames != null) {
                                         display1.setText(displayNames.getFirstName());
                                         display2.setText(displayNames.getLastName());
@@ -1010,7 +1026,7 @@ import java.util.List;
                                     lofield.setText("");
                                 }
 
-                                else// if (!churchService.getCurrentDate(nameId).equalsIgnoreCase(dateString))
+                                else
                                 {
                                     churchService.updateCurrentDateInfo(dateString,name);
                                     churchService.updateAttendanceOfMembers(name);
@@ -1019,9 +1035,6 @@ import java.util.List;
                                     if (animationTimer == null) {
                                         //  try {
                                         displayNames = checkMember.get(0);
-                             /*} catch (NoValueFound ex) {
-                                 throw new RuntimeException(ex);
-                             }*/
                                         if (displayNames != null) {
                                             display1.setText(displayNames.getFirstName());
                                             display2.setText(displayNames.getLastName());
@@ -1032,13 +1045,11 @@ import java.util.List;
                                         animationTimer = new Timer(1500, new TimerClass());
                                         animationTimer.start();
 
-                                    } else if (animationTimer.isRunning()) {
-                                        //   try {
+                                    } else if (animationTimer.isRunning())
+                                    {
                                         displayNames = checkMember.get(0);
-                             /*} catch (NoValueFound ex) {
-                                 throw new RuntimeException(ex);
-                             }*/
-                                        if (displayNames != null) {
+                                        if (displayNames != null)
+                                        {
                                             display1.setText(displayNames.getFirstName());
                                             display2.setText(displayNames.getLastName());
                                         }
@@ -1053,9 +1064,7 @@ import java.util.List;
                             {
                                 JOptionPane.showMessageDialog(null, "User Not Registered  : Please Register ");
                                 lofield.setText("");
-                            }/* else if (!churchService.getName(name)) {
-                                 JOptionPane.showMessageDialog( null, "Please Register ");
-                             }*/
+                            }
                         } catch (IllegalStateException sql) {
                             sql.toString();
                         }
@@ -1070,12 +1079,15 @@ import java.util.List;
     }
 
     class EditDialog extends JDialog {
+
+        private JButton searchButton;
+        private Member searchMember;
         private JPanel enter = new JPanel();
         private JPanel panel = new JPanel();
-        private JTextField name1, name2, idNumber, sex, datebirth, photoImage;
+        private JTextField name1,sfield, ffield,name2, Adfield,idNumber,
+                sex, datebirth, photoImage,phoneNum,names,idfield;
         private JLabel name1Label, name2Label, areaLabel, idNumberLabel, datebirthLabel, firstName, status, id, address, pho, sexLabel, street;
         private JButton submit, photoLabel;
-
 
         public EditDialog(JFrame Eframe) {
             super(Eframe, " EDIT INFORMATION", null);
@@ -1137,7 +1149,7 @@ import java.util.List;
             enter.add(idfield);
             enter.add(new JLabel(""));
             enter.add(searchButton);
-            submit.setIcon(new javax.swing.ImageIcon("C:\\church\\Save16.gif"));
+            submit.setIcon(new ImageIcon("C:\\church\\Save16.gif"));
             add(panel, "Center");
             add(enter, "South");
 
@@ -1197,15 +1209,14 @@ import java.util.List;
                     }
                 }
             });
-            searchButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent event) {
+            searchButton.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
+                {
                     String no = idfield.getText();
-                    //    try {
                     searchMember = churchService.displayMethod(no);
-                  /*   } catch (NoValueFound e) {
-                         throw new RuntimeException(e);
-                     }*/
-                    if (searchMember != null) {
+                    if (searchMember != null)
+                    {
                         ffield.setText(searchMember.getFirstName());
                         ffield.setEditable(true);
                         name1.setText(searchMember.getLastName());
@@ -1216,15 +1227,15 @@ import java.util.List;
                         Adfield.setEditable(true);
                         phoneNum.setText(searchMember.getPhone());
                         phoneNum.setEditable(true);
-                        // street.setText(searchMember.getStreet());
-                        // street.setEditable(true);
                         sex.setText(searchMember.getSex());
                         sex.setEditable(true);
                         photoImage.setText(searchMember.getMemberPhoto());
                         photoImage.setEditable(true);
                         datebirth.setText(searchMember.getDateBorn());
                         datebirth.setEditable(true);
-                    } else {
+                    }
+                    else
+                    {
                         sfield.setText("");
                         ffield.setText("");
                         idfield.setText("");
@@ -1241,8 +1252,11 @@ import java.util.List;
                     }
                 }
             });
-            submit.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
+
+            submit.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
                     churchService.updateMemberInfo(idfield.getText(), Adfield.getText(), datebirth.getText(),
                              ffield.getText(), name1.getText(), sfield.getText(),
                             phoneNum.getText(), sex.getText(),photoImage.getText(), idfield.getText());
@@ -1278,9 +1292,14 @@ import java.util.List;
         }
     }
 
-    class SearchDialog extends JDialog {
+    class SearchDialog extends JDialog
+    {
         private JPanel panel, display, total;
-        private JLabel otherN;
+        private JLabel loginLabel;
+        private JButton submit;
+        private JTextField firstField;
+
+        private JTextField enterId;
         private JLabel sunN;
         private JLabel surField;
         private Object[][] searchObjects;
@@ -1293,6 +1312,7 @@ import java.util.List;
             panel = new JPanel();
             display = new JPanel();
             total = new JPanel();
+            enterId = new JTextField(6);
             total.setLayout(new BorderLayout());
             display.setLayout(new GridLayout(3, 2, 3, 1));
             display.setBorder(BorderFactory.createTitledBorder(""));
@@ -1308,9 +1328,9 @@ import java.util.List;
             loginLabel = new JLabel();
             loginLabel.setText("     ID NUMBER");
             display.add(loginLabel);
-            EnterID.setText(" ");
-            EnterID.setEditable(true);
-            display.add(EnterID);
+            enterId.setText(" ");
+            enterId.setEditable(true);
+            display.add(enterId);
             submit = new JButton();
             submit.setText("SEARCH.....");
             panel.add(submit);
@@ -1322,16 +1342,15 @@ import java.util.List;
                 public void actionPerformed(ActionEvent e) {
                         List<Member> searchMember = new ArrayList<>();
 
-                        if (EnterID.getText().equalsIgnoreCase("") &&
+                        if (enterId.getText().equalsIgnoreCase("") &&
                                 (firstField.getText() != null && !firstField.getText().equalsIgnoreCase("")) ) {
                             searchMember = churchService.findByFirstName(firstField.getText());
-                            System.out.println(EnterID.getText() + " name search");
+                            System.out.println(enterId.getText() + " name search");
 
-                        } else if ((firstField.getText()).isEmpty() && !(EnterID.getText()).isEmpty()) {
-                            System.out.println(EnterID.getText() + " id search 0");
-                             idMember = churchService.displayMethod(EnterID.getText());
-                           // searchMember.add(idMember);
-                            System.out.println(EnterID.getText() + " id search 1");
+                        } else if ((firstField.getText()).isEmpty() && !(enterId.getText()).isEmpty()) {
+                            System.out.println(enterId.getText() + " id search 0");
+                             idMember = churchService.displayMethod(enterId.getText());
+                            System.out.println(enterId.getText() + " id search 1");
 
                         }
                         columnSearch = new String[]{ "member_photo","id", "sex", "last_name", "first_name", "address", "date_born", "phone", "status",
@@ -1356,13 +1375,9 @@ import java.util.List;
                         searchObjects[0][11] = idMember.getResent();
                         resultTable = new JTable(searchObjects,columnSearch);
                         add(new JScrollPane(resultTable), "Center");
-                        imageRendererClass = new ImageRendererClass();
                         imageRendererClass.setSetTable(resultTable);
                         imageRendererClass.setString("member_photo");
                         resultTable.getColumn("member_photo").setCellRenderer(imageRendererClass);
-/*
-                        TableRowSorter<TableModel> sorter = new TableRowSorter((TableModel) resultTable);
-                        resultTable.setRowSorter(sorter);*/
 
                     } catch (IllegalStateException sql) {
                         sql.printStackTrace();
@@ -1381,7 +1396,6 @@ import java.util.List;
 
     class InformationDialog extends JDialog {
         private JPanel panel;
-        private JTextArea area;
 
         public InformationDialog(JFrame frame) {
             super(frame, "ABOUT US", null);
@@ -1400,10 +1414,12 @@ import java.util.List;
     }
 
     class NonDialog extends JDialog {
+        private JButton print;
         public NonDialog(JFrame Noframe) {
             super(Noframe, " NoN Workers - MEMBER ", null);
             setLayout(new BorderLayout());
             JPanel pane = new JPanel();
+            print = new JButton("PRINT");
             JButton search = new JButton("VIEW");
             pane.add(search);
             pane.add(print);
@@ -1442,7 +1458,6 @@ import java.util.List;
         }
     }
 
-
     class SundayActivityDialog extends JDialog {
         private JTextField minister;
         private JTextField topic;
@@ -1452,7 +1467,6 @@ import java.util.List;
         private JTextField total;
         private JLabel ministerLabel;
         private JLabel topicLabel;
-        private JLabel deptLabel;
         private JLabel maleLabel;
         private JLabel femaleLabel;
         private JLabel childrenLabel;
@@ -1475,7 +1489,6 @@ import java.util.List;
             submitDate = new JButton("DATE");
             ministerLabel = new JLabel("        MINISTER NAME");
             topicLabel = new JLabel("       TOPIC");
-            //deptLabel = new JLabel("        SERVICE DATE");
             totalLabel = new JLabel("        TOTAL");
             childrenLabel = new JLabel("        TOTAL CHILDREN");
             femaleLabel = new JLabel("        FEMALE TOTAL");
@@ -1490,7 +1503,6 @@ import java.util.List;
             totalLabel.setBorder(BorderFactory.createTitledBorder(""));
             ministerLabel.setBorder(BorderFactory.createTitledBorder(""));
             topicLabel.setBorder(BorderFactory.createTitledBorder(""));
-            //  deptText = new JTextField(20);
             submitLabel = new JLabel("    ");
             submit = new JButton("SUBMIT");
             panel = new JPanel(new GridLayout(7, 2, 1, 1));
@@ -1503,8 +1515,6 @@ import java.util.List;
             panel.add(topic);
             panel.add(ministerLabel);
             panel.add(minister);
-/*            panel.add(deptLabel);
-            panel.add(deptText);*/
              panel.add(maleLabel);
             panel.add(male);
             panel.add(femaleLabel);
@@ -1528,9 +1538,10 @@ import java.util.List;
                     dateText.setText(pick.getPickedDate());
                 }
             });
+
             submit.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ex) {
-                    //    try {
+                public void actionPerformed(ActionEvent ex)
+                {
                     if (minister.getText() != null && topic.getText() != null) {
                         String newDate = dateText.getText();
                         int m = Integer.parseInt(male.getText().trim());
@@ -1538,13 +1549,12 @@ import java.util.List;
                         int c = Integer.parseInt(children.getText().trim());
                         int t = Integer.parseInt(total.getText().trim());
                         churchService.addChurchAttendance(new ServiceAttendance(newDate, minister.getText(), t ,topic.getText(),n, m,  c));
-                        //    }
                     }
                 }
             });
+
             dateText.setText((new DatePicker(frame)).getDefaultDate());
             topic.setEditable(true);
-            //       deptText.setEditable(true);
             minister.setEditable(true);
             topic.setEditable(true);
             male.setEditable(true);
@@ -1552,7 +1562,6 @@ import java.util.List;
             children.setEditable(true);
             total.setEditable(true);
             topic.setText("");
-            //     deptText.setText("");
             minister.setText("");
             topic.setText("");
             male.setText("");
@@ -1600,6 +1609,7 @@ import java.util.List;
                      locates.setText(picker.getPickedDate());
                  }
              });
+
              submit.addActionListener(new ActionListener() {
                  public void actionPerformed(ActionEvent event) {
                      resultTable = new JTable(churchService);
@@ -1613,6 +1623,7 @@ import java.util.List;
                      setLocation(50, 50);
                  }
              });
+
              print.addActionListener(new ActionListener() {
                  public void actionPerformed(ActionEvent event) {
                      MessageFormat headerFormat = new MessageFormat("");
@@ -1684,14 +1695,11 @@ import java.util.List;
                      add(new JScrollPane(resultTable), "Center");
                      TableRowSorter<TableModel> sorter = new TableRowSorter(churchService);
                      resultTable.setRowSorter(sorter);
-                    // if (locates.getText() != null) {
-
-                   //  }
-
                      setSize(1300, 550);
                      setLocation(100, 100);
                  }
              });
+
              print.addActionListener(new ActionListener() {
                  public void actionPerformed(ActionEvent event) {
                      MessageFormat headerFormat = new MessageFormat("");
@@ -1844,10 +1852,6 @@ import java.util.List;
                     supervisorText.setText("");
                     workName.setText("");
                     worknumber.setText("");
-
-                     /*} catch (SQLException sql) {
-                         sql.printStackTrace();
-                     }*/
                 }
             });
             statusText.setEditable(true);
@@ -1874,10 +1878,13 @@ import java.util.List;
         private JPanel viewPanel;
         private JButton submit;
 
+        private JButton print;
+
         public ViewMaintenanceDialog(JFrame frame) {
             super(frame, "VIEW  MAINTENANCE ACTIVITY", null);
             setLayout(new BorderLayout());
             submit = new JButton("VIEW MAINTENANCE");
+            print = new JButton("PRINT");
             viewPanel = new JPanel();
             viewPanel.setLayout(new FlowLayout());
             viewPanel.add(submit);
@@ -1917,7 +1924,7 @@ import java.util.List;
 
     class AllDialog extends JDialog {
 
-
+        private JButton print;
         private Object[][] objects;
         private String [] columnObject;
         //private JLabel image = new JLabel();
@@ -1925,14 +1932,14 @@ import java.util.List;
             super(Noframe, " ALL MEMBER ", null);
             setLayout(new BorderLayout());
             JPanel pane = new JPanel();
+            print = new JButton("PRINT");
             JButton search = new JButton("VIEW");
             pane.add(search);
             pane.add(print);
             add(pane, "South");
             search.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-// the use of defaulttablemode to supply the parameter fot jtable object.
-
+                public void actionPerformed(ActionEvent e)
+                {
                    List<Member> allMember = churchService.findAllMember();
                     int size = allMember.size();
                     objects = new Object[size][12];
@@ -1941,24 +1948,10 @@ import java.util.List;
                     for(int i =0; i<size; i++)
                     {
                         JLabel image = new JLabel();
-                   //     BufferedImage bufferedImage = null;
-                   //     BufferedImage saveBufferedImage = null;
-                   //     try {
                             if(allMember.get(i).getMemberPhoto().equalsIgnoreCase("")) {
-                                image.setIcon(new javax.swing.ImageIcon("C:\\church\\rccgsmall.jpg"));
+                                image.setIcon(new ImageIcon("C:\\church\\rccgsmall.jpg"));
                             }
-                      //          bufferedImage = ImageIO.read(new File("C:\\church\\rccgsmall.jpg"));
-                    //        else
-                    //        bufferedImage = ImageIO.read(new File(allMember.get(i).getMemberPhoto()));
-                   //     } catch (IOException ex) {
-                   //         throw new RuntimeException(ex);
-                  //      }
-                    //    Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_SMOOTH);
-
-
-                   //     image.setIcon( new ImageIcon(bufferedImage, ""));
-                        image.setIcon(new javax.swing.ImageIcon(allMember.get(i).getMemberPhoto()));
-
+                        image.setIcon(new ImageIcon(allMember.get(i).getMemberPhoto()));
 
                         objects[i][0] = image;
                         objects[i][1] = allMember.get(i).getId();
@@ -1974,19 +1967,13 @@ import java.util.List;
                         objects[i][11] = allMember.get(i).getResent();
                     }
                     resultTable = new JTable(objects,columnObject);
-                    imageRendererClass = new ImageRendererClass();
                     imageRendererClass.setSetTable(resultTable);
                     imageRendererClass.setString("member_photo");
-
-                 //   resultTable = new JTable(churchService);
                     add(new JScrollPane(resultTable), "Center");
-                 //   TableRowSorter<TableModel> sorter = new TableRowSorter(imageDisplayClass);
                     resultTable.setRowHeight(120);
                     resultTable.getColumn("member_photo").setCellRenderer( imageRendererClass);
                     resultTable.setCellSelectionEnabled(true);
                     resultTable.getColumnModel().getColumn(0).setPreferredWidth(150);
-                //    resultTable.setRowSorter(sorter);
-                //    imageDisplayClass.findAllMember();
                     setSize(1200, 550);
                     setLocation(100, 100);
                 }
@@ -2022,6 +2009,8 @@ import java.util.List;
         private JPanel dis;
         private JButton submit;
         private JList<String> searchList;
+        private JTextArea displayArea;
+
         private String[] searchText = new String[]{"MALE", "FEMALE", "SINGLE", "MARRIED"};
         private String[] sqlText = new String[]{"SELECT FIRST_NAME,LAST_NAME,ADDRESS,Phone FROM MEMBER WHERE SEX = 'MALE'",
                 "SELECT FIRST_NAME,LAST_NAME,ADDRESS,Phone FROM MEMBER WHERE SEX = 'FEMALE'",
@@ -2036,6 +2025,7 @@ import java.util.List;
             panel1 = new JPanel();
             dis = new JPanel();
             searchList = new JList<String>(searchText);
+            displayArea = new JTextArea(3, 10);
             searchList.setEnabled(true);
             searchList.setVisibleRowCount(4);
             searchList.setSelectionMode(0);
@@ -2084,6 +2074,9 @@ import java.util.List;
     }
 
     class DisplayTable extends JDialog {
+
+        private JButton print;
+
         private JPanel panel;
         private JLabel displayBirthDay;
         private JButton submit;
@@ -2099,6 +2092,7 @@ import java.util.List;
             panel = new JPanel();
             noting = new JLabel();
             submit = new JButton("VIEW");
+            print = new JButton("PRINT");
             displayBirthDay = new JLabel("Click to View Birthday Of Members");
             printNumber = new JButton("SAVE NUMBER");
             printNumber.setEnabled(false);
@@ -2118,10 +2112,8 @@ import java.util.List;
                           for(int i =0; i<size; i++)
                     {
                         JLabel image = new JLabel();
-                        image.setIcon( new javax.swing.ImageIcon(birthDayList.get(i).getMemberPhoto()));
-                     //   }
+                        image.setIcon( new ImageIcon(birthDayList.get(i).getMemberPhoto()));
                         objects[i][0] = image;
-
                         objects[i][1] = birthDayList.get(i).getFirstName();
                         objects[i][2] = birthDayList.get(i).getLastName();
                         objects[i][3] = birthDayList.get(i).getAddress();

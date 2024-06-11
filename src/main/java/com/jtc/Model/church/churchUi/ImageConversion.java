@@ -7,7 +7,8 @@ public class ImageConversion {
 
     public static BufferedImage convertToBufferedImage(Image img) {
 
-        if (img instanceof BufferedImage) {
+        if (img instanceof BufferedImage)
+        {
             return (BufferedImage) img;
         }
 
@@ -17,7 +18,9 @@ public class ImageConversion {
                 BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D graphics2D = bi.createGraphics();
+
         graphics2D.drawImage(img, 0, 0, null);
+
         graphics2D.dispose();
 
         return bi;

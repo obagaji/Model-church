@@ -5,8 +5,6 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-//import org.springframework.data.annotation.Id;
-
 
 @Entity
 @NoArgsConstructor
@@ -16,8 +14,11 @@ public class Workers
 {
       @Id
       private String workerId;
+
       private String  workerPosition;
+
       private String joinDate;
+
       private String departNames;
 
 
