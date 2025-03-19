@@ -8,9 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
+//@AllArgsConstructor
+//@NoArgsConstructor
+//@Data
 public class NonWorker {
 
     @Id
@@ -18,6 +18,28 @@ public class NonWorker {
 
     private String joinDate;
 
+    public NonWorker() {
+    }
+
+    public NonWorker(String nonWorkerId, String joinDate) {
+        this.nonWorkerId = nonWorkerId;
+        this.joinDate = joinDate;
+    }
 
 
+    public String getNonWorkerId() {
+        return nonWorkerId;
+    }
+
+    public void setNonWorkerId(String nonWorkerId) {
+        this.nonWorkerId = nonWorkerId;
+    }
+
+    public String getJoinDate() {
+        return joinDate;
+    }
+
+    public void setJoinDate(String joinDate) {
+        this.joinDate = joinDate;
+    }
 }

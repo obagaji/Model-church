@@ -17,7 +17,7 @@ CREATE TABLE  Member
     date_born varchar(100),
     phone varchar(100)NOT NULL,
     marry varchar(100),
-    email_address varchar(100),
+    email_address varchar(100),<!----this actually represent the photo of the member by its address-->
     attendance INT NOT NULL,
     login_date varchar(100) NOT NULL,
     in_church varchar(100),
@@ -37,6 +37,13 @@ CREATE TABLE workers_attendance
     service_date DATE NOT NULL,
     workers_times TIME NOT NULL,
     attendance_id varchar(100) NOT NULL
+);
+CREATE TABLE workers_login
+(
+    id varchar (100) NOT NULL,
+    login_time varchar(100) NOT NULL,
+    member_status varchar(50) NOT NULL,
+login_date varchar(50) NOT NULL
 );
 CREATE TABLE  department
 (
@@ -77,6 +84,6 @@ CREATE TABLE  attendance
     attendance_children INT
 );
 
-INSERT INTO Member
-(id, sex,last_name ,first_name ,address,date_born,phone,marry,email_address,attendance,login_date,in_church ,resent)
-VALUES("nbv1000","MALE","HGJB","BSFMS","DFAA","AFA","FGEEA","ETHTEHYER","  QE  QE","1","dddd","awfw","efrf");
+--INSERT INTO Member
+--(id, sex,last_name ,first_name ,address,date_born,phone,marry,email_address,attendance,login_date,in_church ,resent)
+--VALUES("nbv1000","MALE","HGJB","BSFMS","DFAA","AFA","FGEEA","ETHTEHYER","  QE  QE","1","dddd","awfw","efrf");

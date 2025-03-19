@@ -28,5 +28,27 @@ public class DateClass
         this.outChurch = outChurch;
     }
 
+    public String getIdmember() {
+        return idmember;
+    }
 
+    public void setIdmember(String idmember) {
+        this.idmember = idmember;
+    }
+
+    public String getClassDate() {
+        return classDate;
+    }
+
+    public void setClassDate(String classDate) {
+        this.classDate = classDate;
+    }
+
+    public String getOutChurch() {
+        return outChurch;
+    }
+
+    public void setOutChurch(String outChurch) {
+        this.outChurch = outChurch;
+    }
 }

@@ -178,7 +178,6 @@ public class QueryImplementation extends AbstractTableModel {
         String sql = "SELECT id,sex,last_name,first_name,status,address,phone," +
                 "  attendance ,register_date,resent FROM member" +
                 "  INNER JOIN Non_Worker ON Non_Worker.non_worker_Id =  Member.id ";
-
         try {
             setQuery( jdbcTemplate.queryForRowSet(sql));
         }
@@ -226,7 +225,7 @@ public class QueryImplementation extends AbstractTableModel {
                 rs.getString("sex"), rs.getString("last_name"), rs.getString("first_name"), rs.getString("address"),
                 rs.getString("date_born"), rs.getString("phone"), rs.getString("status"),
                 rs.getInt("attendance"), rs.getString("register_date"),
-                rs.getString("resent")),objects);//, rs.getString("member_photo")),objects);
+                rs.getString("resent"), rs.getString("member_photo")),objects);
     }
 
     public  List<Member> findByFirstName(String first)
@@ -239,12 +238,12 @@ public class QueryImplementation extends AbstractTableModel {
                     rs.getString("sex"), rs.getString("last_name"), rs.getString("first_name"), rs.getString("address"),
                     rs.getString("date_born"), rs.getString("phone"), rs.getString("status"),
                     rs.getInt("attendance"), rs.getString("register_date"),
-                    rs.getString("resent")),first);//, rs.getString("member_photo")), first);
+                    rs.getString("resent"), rs.getString("member_photo")), first);
 
         if (listMember.isEmpty())
         {
             listMember.add(new Member("No Id","","No Name","No Name","","",
-                         "","",0,"",""));//, ""));
+                         "","",0,"","",""));//, ""));
         }
         return listMember;
     }
@@ -373,7 +372,7 @@ public class QueryImplementation extends AbstractTableModel {
         }
         catch (NoSuchElementException ex)
         {
-            return new NonWorker("NCMP000","00-00-00");
+            return new NonWorker("LE000","00-00-00");
         }
     }
     public DateClass findDateExist(String dateString)
@@ -448,7 +447,7 @@ public class QueryImplementation extends AbstractTableModel {
     }
     public int updateInchurchValue( String name)
     {
-        String sql = "UPDATE date_class SET out_church = PRESENT  WHERE idmember = ?";
+        String sql = "UPDATE date_class SET out_church = 'PRESENT'  WHERE idmember = ?";
         return jdbcTemplate.update(sql,name);
     }
 
@@ -510,11 +509,11 @@ public class QueryImplementation extends AbstractTableModel {
                     rs.getString("first_name"),rs.getString("address"),rs.getString("date_born"),
                     rs.getString("phone"),  rs.getString("status"),
                     rs.getInt("attendance"), rs.getString("register_date"),
-                    rs.getString("resent")), id);// rs.getString("member_photo")),id);
+                    rs.getString("resent"),rs.getString("member_photo")),id);
              if (memberList.isEmpty())
              {
                  memberList.add(new Member("No Id","","No Name","No Name","","",
-                         "","",0,"",""));//, ""));
+                         "","",0,"","",""));//, ""));
              }
      //   }
       /*  catch (NullPointerException n)
@@ -552,8 +551,8 @@ public class QueryImplementation extends AbstractTableModel {
             newMember = jdbcTemplate.queryForObject(sql,(rs, s)->new Member(rs.getString("id"),rs.getString("sex")
             ,rs.getString("last_name"),rs.getString("first_name"),rs.getString("address"),
                     rs.getString("date_born"),rs.getString("phone"),rs.getString("status")
-            ,rs.getInt("attendance"),rs.getString("register_date"),rs.getString("resent"))
-              ,name);//      rs.getString("member_photo")),name);
+            ,rs.getInt("attendance"),rs.getString("register_date"),rs.getString("resent")
+              , rs.getString("member_photo")),name);
         }
         catch (EmptyResultDataAccessException ex)
         {
@@ -585,16 +584,14 @@ public class QueryImplementation extends AbstractTableModel {
 
     public int updateMemberInfo(String id, String address,String dateBirth,String first,String last,String status,
                                String phone, String sex,
-                              //  String memberPhoto
+                                String memberPhoto,
              String idlast )
     {
         String sql =  "update member set id =?1, sex =?2,last_name =?3, first_name=?4," +
-                "status =?5,address = ?6, phone = ?7,date_born = ?8" +
-                //", member_photo = ?9 "
-                "WHERE id = ?10";
+                "status =?5,address = ?6, phone = ?7,date_born = ?8,  member_photo = ?9 WHERE id = ?10";
         return jdbcTemplate.update(sql, id,
                 sex,last,first,status,address,phone,dateBirth,
-                //memberPhoto,
+                memberPhoto,
                 idlast);
     }
 
@@ -602,9 +599,9 @@ public class QueryImplementation extends AbstractTableModel {
     {
         String sql = " INSERT INTO member (id,sex,last_name,first_name,address,date_born,phone,status," +
                 "attendance,register_date,resent" +
-                //",member_photo" +
+                ",member_photo" +
                 ")VALUES(?,?,?,?,?,?,?,?,?,?,?" +
-               // ",?" +
+                ",?" +
                 ")";
         return jdbcTemplate.update(sql, member.getId(),member.getSex(),member.getLastName(),member.getFirstName()
                 ,member.getAddress(),member.getDateBorn(),member.getPhone(),member.getStatus(),
@@ -639,7 +636,8 @@ public class QueryImplementation extends AbstractTableModel {
     }
     public void marriedSelection(String marriedSingle)
     {
-        String sql = " Select * from member where status = ?";
+        String sql = " Select member.last_name, member.first_name, member.status ,member.address , member.phone , +" +
+                " member.register_date,member.resent from member where status = ?";
         try {
             setQuery( jdbcTemplate.queryForRowSet(sql,marriedSingle));
         }
@@ -660,14 +658,82 @@ public class QueryImplementation extends AbstractTableModel {
         }
 
     }
+    public int updateWorkerAttendance(String loginTime,String useId)
+    {
+        String sql = "UPDATE Workers_Login SET login_Time = ? WHERE id = ?";
+        return jdbcTemplate.update(sql,loginTime,useId);
+    }
+    // method to update the status of the member for login time purpose
+    public int updateLoginMemberStatus(String loginStatus,String useId)
+    {
+        String sql = "UPDATE Workers_Login SET member_status = ? WHERE id = ?";
+        return jdbcTemplate.update(sql,loginStatus,useId);
+    }
+//INSERT INTO THE LOGIN TIME TABLE AS EVERY MEMBER IS CREATED.
+    public int addWorkerAttendance(WorkersLogin workersAttendance)
+    {
+        String sql = " INSERT INTO Workers_Login ( id,login_Time,member_status,login_Date) VALUES(?,?,?,?)";
+        return jdbcTemplate.update(sql, workersAttendance.getWorkerTimeId(),workersAttendance.getLoginTime(),
+                workersAttendance.getMemberStatus(),workersAttendance.getLoginDate());
+    }
+    //get all the login time
+    public void getAllLoginTime()
+    {
+        String sql = " SELECT member.last_name, member.first_name, Workers_Login.login_Time,Workers_Login.login_Date FROM member " +
+                "INNER JOIN Workers_Login ON Workers_Login.id = member.id ";
+        try {
+            setQuery(jdbcTemplate.queryForRowSet(sql));
+        }
+        catch (SQLException sqlException)
+        {
+            sqlException.printStackTrace();
+        }
+    }
+    // get the information about  a member from the worker login table
+    public String getAttendanceIdMember(String id)
+    {
+        String sql = " Select member_status from Workers_Login where id=? ";
+        return jdbcTemplate.queryForObject(sql, String.class);
 
-    public void getAllWorkersAttendanceTime()
+        /*
+        * try {
+            return jdbcTemplate.queryForObject(sql, (rs, numRow) ->
+                    new String(rs.getString("resent")), id);
+        }
+        catch (EmptyResultDataAccessException ex)
+        {
+            return "No Value Found";
+        }
+        catch (NullPointerException n)
+        {
+            return "No Value Found";
+        }
+        * */
+    }
+    // GET ALL THE WORKERS LOGIN TIME
+    public void getAllWorkersLoginTime()
     {
         String sql = " SELECT member.last_name, member.first_name, member.status ,member.address , member.phone ," +
                 " member.attendance ,member.register_date,member.resent," +
-                "Workers_Attendance.login_Time" +
+                "Workers_Login.login_Time" +
                 " FROM member " +
-                "INNER JOIN Workers_Attendance ON Workers_Attendance.worker_Id = member.id";
+                "INNER JOIN Workers_Login ON Workers_Login.id = member.id WHERE Workers_Login.member_status = 'Worker'";
+        try {
+            setQuery(jdbcTemplate.queryForRowSet(sql));
+        }
+        catch (SQLException sqlException)
+        {
+            sqlException.printStackTrace();
+        }
+    }
+// GET ALL THE ATTENDANCE OF ALL MEMBERS REGISTERED IN THE DATA BASE, NOT ONLY WORKERS
+    public void getAllMembersAttendanceTime()
+    {
+        String sql = " SELECT member.last_name, member.first_name, member.status ,member.address , member.phone ," +
+                " member.attendance ,member.register_date,member.resent," +
+                "Workers_Login.login_Time" +
+                " FROM member " +
+                "INNER JOIN Workers_Login ON Workers_Login.id = member.id WHERE Workers_Login.member_status = 'NONWORKER'";
         try {
             setQuery(jdbcTemplate.queryForRowSet(sql));
         }
@@ -700,7 +766,7 @@ public class QueryImplementation extends AbstractTableModel {
                 rs.getString("first_name"),rs.getString("address"),rs.getString("date_born"),
                 rs.getString("phone"),  rs.getString("status"),
                 rs.getInt("attendance"), rs.getString("register_date"),
-                rs.getString("resent")));//, rs.getString("member_photo")));
+                rs.getString("resent"), rs.getString("member_photo")));
         /*
         try {
             setQuery( jdbcTemplate.queryForRowSet(sql));
@@ -723,7 +789,7 @@ public class QueryImplementation extends AbstractTableModel {
                 rs.getString("first_name"),rs.getString("address"),rs.getString("date_born"),
                 rs.getString("phone"),  rs.getString("status"),
                 rs.getInt("attendance"), rs.getString("register_date"),
-                rs.getString("resent")));//, rs.getString("member_photo")));
+                rs.getString("resent"), rs.getString("member_photo")));
         return memberList.stream().filter(member ->
                 (member.getDateBorn().substring(3,5).equalsIgnoreCase(searchString))).toList();
 

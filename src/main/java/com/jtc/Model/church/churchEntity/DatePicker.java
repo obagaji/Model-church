@@ -156,6 +156,7 @@ public class DatePicker {
                 DatePicker.this.month--;
 
                 DatePicker.this.displayDate();
+
             }
         });
 
@@ -172,6 +173,7 @@ public class DatePicker {
                 DatePicker.this.month++;
 
                 DatePicker.this.displayDate();
+
             }
         });
 
@@ -268,6 +270,7 @@ public class DatePicker {
             DatePicker.this.setPickedDate(days);
 
             DatePicker.this.d.dispose();
+
         }
     }
 

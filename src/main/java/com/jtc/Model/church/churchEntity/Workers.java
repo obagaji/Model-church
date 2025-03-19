@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+
 @Data
 public class Workers
 {
@@ -22,6 +23,38 @@ public class Workers
       private String departNames;
 
 
+
+      public String getWorkerId() {
+            return workerId;
+      }
+
+      public void setWorkerId(String workerId) {
+            this.workerId = workerId;
+      }
+
+      public String getWorkerPosition() {
+            return workerPosition;
+      }
+
+      public void setWorkerPosition(String workerPosition) {
+            this.workerPosition = workerPosition;
+      }
+
+      public String getJoinDate() {
+            return joinDate;
+      }
+
+      public void setJoinDate(String joinDate) {
+            this.joinDate = joinDate;
+      }
+
+      public String getDepartNames() {
+            return departNames;
+      }
+
+      public void setDepartNames(String departNames) {
+            this.departNames = departNames;
+      }
 }
 
 
