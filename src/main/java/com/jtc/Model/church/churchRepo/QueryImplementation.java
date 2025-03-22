@@ -226,7 +226,7 @@ public class QueryImplementation extends AbstractTableModel {
                 rs.getString("sex"), rs.getString("last_name"), rs.getString("first_name"), rs.getString("address"),
                 rs.getString("date_born"), rs.getString("phone"), rs.getString("status"),
                 rs.getInt("attendance"), rs.getString("register_date"),
-                rs.getString("resent"), rs.getString("member_photo")),objects);
+                rs.getString("resent")),objects);//, rs.getString("member_photo")),objects);
     }
 
     public  List<Member> findByFirstName(String first)
@@ -239,12 +239,12 @@ public class QueryImplementation extends AbstractTableModel {
                     rs.getString("sex"), rs.getString("last_name"), rs.getString("first_name"), rs.getString("address"),
                     rs.getString("date_born"), rs.getString("phone"), rs.getString("status"),
                     rs.getInt("attendance"), rs.getString("register_date"),
-                    rs.getString("resent"), rs.getString("member_photo")), first);
+                    rs.getString("resent")),first);//, rs.getString("member_photo")), first);
 
         if (listMember.isEmpty())
         {
             listMember.add(new Member("No Id","","No Name","No Name","","",
-                         "","",0,"","", ""));
+                         "","",0,"",""));//, ""));
         }
         return listMember;
     }
@@ -510,11 +510,11 @@ public class QueryImplementation extends AbstractTableModel {
                     rs.getString("first_name"),rs.getString("address"),rs.getString("date_born"),
                     rs.getString("phone"),  rs.getString("status"),
                     rs.getInt("attendance"), rs.getString("register_date"),
-                    rs.getString("resent"), rs.getString("member_photo")),id);
+                    rs.getString("resent")), id);// rs.getString("member_photo")),id);
              if (memberList.isEmpty())
              {
                  memberList.add(new Member("No Id","","No Name","No Name","","",
-                         "","",0,"","", ""));
+                         "","",0,"",""));//, ""));
              }
      //   }
       /*  catch (NullPointerException n)
@@ -552,8 +552,8 @@ public class QueryImplementation extends AbstractTableModel {
             newMember = jdbcTemplate.queryForObject(sql,(rs, s)->new Member(rs.getString("id"),rs.getString("sex")
             ,rs.getString("last_name"),rs.getString("first_name"),rs.getString("address"),
                     rs.getString("date_born"),rs.getString("phone"),rs.getString("status")
-            ,rs.getInt("attendance"),rs.getString("register_date"),rs.getString("resent"),
-                    rs.getString("member_photo")),name);
+            ,rs.getInt("attendance"),rs.getString("register_date"),rs.getString("resent"))
+              ,name);//      rs.getString("member_photo")),name);
         }
         catch (EmptyResultDataAccessException ex)
         {
@@ -584,18 +584,28 @@ public class QueryImplementation extends AbstractTableModel {
 */
 
     public int updateMemberInfo(String id, String address,String dateBirth,String first,String last,String status,
-                               String phone, String sex,String memberPhoto, String idlast )
+                               String phone, String sex,
+                              //  String memberPhoto
+             String idlast )
     {
         String sql =  "update member set id =?1, sex =?2,last_name =?3, first_name=?4," +
-                "status =?5,address = ?6, phone = ?7,date_born = ?8, member_photo = ?9 WHERE id = ?10";
+                "status =?5,address = ?6, phone = ?7,date_born = ?8" +
+                //", member_photo = ?9 "
+                "WHERE id = ?10";
         return jdbcTemplate.update(sql, id,
-                sex,last,first,status,address,phone,dateBirth,memberPhoto,idlast);
+                sex,last,first,status,address,phone,dateBirth,
+                //memberPhoto,
+                idlast);
     }
 
     public int addMemberInfo(Member member)
     {
         String sql = " INSERT INTO member (id,sex,last_name,first_name,address,date_born,phone,status," +
-                "attendance,register_date,resent,member_photo)VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+                "attendance,register_date,resent" +
+                //",member_photo" +
+                ")VALUES(?,?,?,?,?,?,?,?,?,?,?" +
+               // ",?" +
+                ")";
         return jdbcTemplate.update(sql, member.getId(),member.getSex(),member.getLastName(),member.getFirstName()
                 ,member.getAddress(),member.getDateBorn(),member.getPhone(),member.getStatus(),
                 member.getAttendance(),member.getRegisterDate(),member.getResent(),member.getMemberPhoto());
@@ -650,6 +660,23 @@ public class QueryImplementation extends AbstractTableModel {
         }
 
     }
+
+    public void getAllWorkersAttendanceTime()
+    {
+        String sql = " SELECT member.last_name, member.first_name, member.status ,member.address , member.phone ," +
+                " member.attendance ,member.register_date,member.resent," +
+                "Workers_Attendance.login_Time" +
+                " FROM member " +
+                "INNER JOIN Workers_Attendance ON Workers_Attendance.worker_Id = member.id";
+        try {
+            setQuery(jdbcTemplate.queryForRowSet(sql));
+        }
+        catch (SQLException sqlException)
+        {
+            sqlException.printStackTrace();
+        }
+    }
+
 /*
     public int updateResentDate(String updateDate) {
         String sql= " UPDATE date_class set class_date = ?";
@@ -673,7 +700,7 @@ public class QueryImplementation extends AbstractTableModel {
                 rs.getString("first_name"),rs.getString("address"),rs.getString("date_born"),
                 rs.getString("phone"),  rs.getString("status"),
                 rs.getInt("attendance"), rs.getString("register_date"),
-                rs.getString("resent"), rs.getString("member_photo")));
+                rs.getString("resent")));//, rs.getString("member_photo")));
         /*
         try {
             setQuery( jdbcTemplate.queryForRowSet(sql));
@@ -696,7 +723,7 @@ public class QueryImplementation extends AbstractTableModel {
                 rs.getString("first_name"),rs.getString("address"),rs.getString("date_born"),
                 rs.getString("phone"),  rs.getString("status"),
                 rs.getInt("attendance"), rs.getString("register_date"),
-                rs.getString("resent"), rs.getString("member_photo")));
+                rs.getString("resent")));//, rs.getString("member_photo")));
         return memberList.stream().filter(member ->
                 (member.getDateBorn().substring(3,5).equalsIgnoreCase(searchString))).toList();
 

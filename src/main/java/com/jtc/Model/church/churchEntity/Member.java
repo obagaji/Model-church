@@ -44,7 +44,8 @@ public class Member {
 
     public Member(String id, String sex, String lastName, String firstName, String address, String dateBorn, String phone,
                   String status,int attendance, String registerDate,
-                  String resent, String memberPhoto) {
+                  String resent)//, String memberPhoto)
+     {
         this.id = id;
         this.sex = sex;
         this.lastName = lastName;
@@ -53,7 +54,7 @@ public class Member {
         this.dateBorn = dateBorn;
         this.phone = phone;
         this.status = status;
-        this.memberPhoto = memberPhoto;
+    //    this.memberPhoto = memberPhoto;
         this.attendance = attendance;
         this.registerDate = registerDate;
         this.resent = resent;
