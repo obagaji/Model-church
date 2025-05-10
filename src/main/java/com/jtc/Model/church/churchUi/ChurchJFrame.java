@@ -9,7 +9,6 @@ package com.jtc.Model.church.churchUi;
 import com.jtc.Model.church.churchEntity.*;
 import com.jtc.Model.church.churchRepo.QueryImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -29,14 +28,12 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 /*
 * The springframework stereotype annotation will help spring to pick the class and includes
@@ -122,7 +119,6 @@ import java.util.concurrent.CompletableFuture;
         login.setMnemonic('L');
         firstTimeResponse = new JMenuItem("FIRST  TIMERS RESPONSE");
 
-
         menu = new JMenu("VIEW");
         menu.setMnemonic('V');
         font = new Font("SansSerif", 2, 12);
@@ -144,7 +140,6 @@ import java.util.concurrent.CompletableFuture;
         menu.addSeparator();
         menu.add(allLoginTime);
 
-
         about = new JMenu("ABOUT");
         about.setText("  ABOUT");
         about.setMnemonic('B');
@@ -152,7 +147,6 @@ import java.util.concurrent.CompletableFuture;
         about.setFont(font);
         about.add(StaffOfice);
         StaffOfice.setMnemonic('S');
-
 
         attendanceG = new JMenu("  ATTENDANCE");
         attendanceG.add(attendans);
@@ -162,7 +156,6 @@ import java.util.concurrent.CompletableFuture;
         attendanceG.add(wAttendance);
         attendanceG.addSeparator();
         attendanceG.add(wTimeAttendance);
-
 
         searchMenu = new JMenu();
         searchMenu.setText("LOGIN");
@@ -177,7 +170,6 @@ import java.util.concurrent.CompletableFuture;
         searchMenu.add(reset);
         searchMenu.addSeparator();
         searchMenu.add(exit);
-
 
         admin = new JMenu();
         admin.setBorderPainted(true);
@@ -200,7 +192,6 @@ import java.util.concurrent.CompletableFuture;
         admin.add(official);
         admin.addSeparator();
         admin.add(account);
-
 
         dONLabel = new JLabel();
         displayL = new JLabel();
@@ -319,18 +310,40 @@ import java.util.concurrent.CompletableFuture;
          reset.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int x = 0;
-                for (DateClass dateClass1: churchService.getAllDateClass())
-                {
-                     x = churchService.updateAllDateClass(dateClass1.getIdmember(),"ABSENCE");
-                }
-                if (x>0)
-                {
-                    JOptionPane.showMessageDialog(null,"OK Reset Completed","RESET",JOptionPane.INFORMATION_MESSAGE);
-                }
-                else {
-                    JOptionPane.showMessageDialog(null," Reset Not Completed, Retry","RESET",JOptionPane.INFORMATION_MESSAGE);
-                }
 
+            //    if ((churchService.getAllSerialNumaber()).isEmpty())
+            //    {
+                    for (DateClass dateClass1: churchService.getAllDateClass())
+                    {
+                        x = churchService.updateAllDateClass(dateClass1.getIdmember(),"ABSENCE");
+                        if (churchService.findAllMember().isEmpty()||!churchService.displayName(dateClass1.getIdmember())) {
+                            churchService.newAddMember(churchService.displayMemberMethod(dateClass1.getIdmember()));
+                        }
+                        else
+                        {
+
+                        }
+
+                    }
+                    if (x < 0) {
+                        JOptionPane.showMessageDialog(null, "Reset Not Completed Retry", "RESET", JOptionPane.INFORMATION_MESSAGE);
+
+                    }
+                    else
+                        JOptionPane.showMessageDialog(null, "Reset Completed ", "RESET", JOptionPane.INFORMATION_MESSAGE);
+            //    }
+                /*else {
+                    for (DateClass dateClass1 : churchService.getAllDateClass()) {
+                        x = churchService.updateAllDateClass(dateClass1.getIdmember(), "ABSENCE");
+
+                        if (x < 0) {
+                            JOptionPane.showMessageDialog(null, "Reset Not Completed Retry", "RESET", JOptionPane.INFORMATION_MESSAGE);
+
+                        } else {
+                            JOptionPane.showMessageDialog(null, " Reset Completed ", "RESET", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }
+                }*/
             }
         });
 
@@ -620,7 +633,7 @@ import java.util.concurrent.CompletableFuture;
 * This block of code gets the file type from the string that was passed to it.
 * */
 
-                    /*if (emailField.getText().endsWith("jpg")) {
+                    if (emailField.getText().endsWith("jpg")) {
                          fileType = "jpg";
                     }
                     else if (emailField.getText().endsWith("jif")) {
@@ -631,23 +644,23 @@ import java.util.concurrent.CompletableFuture;
                     }
                     else if (emailField.getText().endsWith("png")) {
                          fileType = "png";
-                    }*/
+                    }
 
-                    /*BufferedImage bufferedImage = null;
+                  //  BufferedImage bufferedImage = null;
                     try {
-                            bufferedImage = ImageIO.read(new File(emailField.getText()));
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }*/
+                        BufferedImage    bufferedImage = ImageIO.read(new File(emailField.getText()));
+                        String fi = emailField.getText();
+                        String[] fileNemeString = fi.split("\\\\");
+                        int lenst = fileNemeString.length;
 // the image is sized and save to file. the file location is provided.
-                    /*Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_FAST);
-                    File saveFile = new File("C:\\church\\" + file.getName()+"." + fileType);
-                    try {
-                        ImageIO.write(ImageConversion.convertToBufferedImage(images),fileType,saveFile);
-                        emailField.setText("C:\\church\\" + file.getName()+"." + fileType);
+                //    Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_FAST);
+                    File saveFile = new File("C:\\church\\" + fileNemeString[lenst-1]);
+
+                        ImageIO.write(ImageConversion.convertToBufferedImage(bufferedImage),fileType,saveFile);
+                        emailField.setText("C:\\church\\" + fileNemeString[lenst-1]);
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
-                    }*/
+                    }
 
                 }
             });
@@ -685,10 +698,10 @@ import java.util.concurrent.CompletableFuture;
                             workerAfield.getText(),formatedDate,workerPfield.getText(),   sm,
                             1, loginDates, loginDates, emailField.getText());
                     String stringID = workerIdfield.getText().toUpperCase();
-                    System.out.println(workerIdfield.getText().toUpperCase());
                     if (!churchService.displayName(stringID)) {
                         nonWorker = new NonWorker(stringID, loginDates);
                        int x = churchService.addMemberInfo(member);
+                        churchService.newAddMember(member);
 
                        if(x>0)
                        {
@@ -1203,7 +1216,7 @@ import java.util.concurrent.CompletableFuture;
     class LogDialog extends JDialog {
 
         private Timer animationTimer;
-        private Member displayNames;
+        private SerialMember displayNames;
 
 
 
@@ -1256,7 +1269,7 @@ import java.util.concurrent.CompletableFuture;
 
                         if (churchService.displayName(name)) {
 
-                            List<Member> checkMember = new ArrayList<>() ;
+                            List<SerialMember> checkMember = new ArrayList<>() ;
                             checkMember = churchService.findByIdValue(name);
                             if (churchService.getCurrentDate(name).equalsIgnoreCase(dateString))
                             {
@@ -1270,6 +1283,7 @@ import java.util.concurrent.CompletableFuture;
                                 churchService.updateAttendanceOfMembers(name);
                                 churchService.updateWorkerAttendance(loginTimeWorker,name);
                                 String member_status = churchService.getAttendanceIdMember(name);
+                                System.out.println();
                                 churchService.addWorkerAttendance(new WorkersLogin(name,loginTimeWorker,member_status,dateString));
                                 churchService.updateAttendance(name);
                                 churchService.updateInchurchValue(name);
@@ -1323,7 +1337,7 @@ import java.util.concurrent.CompletableFuture;
                         try {
                                 if (churchService.displayName(name)) {
 
-                                    List<Member> checkMember = new ArrayList<>() ;
+                                    List<SerialMember> checkMember = new ArrayList<>() ;
                                     checkMember = churchService.findByIdValue(name);
                                     if (churchService.getCurrentDate(name).equalsIgnoreCase(dateString))
                                 {
@@ -1394,9 +1408,10 @@ import java.util.concurrent.CompletableFuture;
     }
 
     class EditDialog extends JDialog {
-
+        private File file;
+        private String fileType;
         private JButton searchButton;
-        private Member searchMember;
+        private SerialMember searchMember;
         private JPanel enter = new JPanel();
         private JPanel panel = new JPanel();
         private JTextField name1,sfield, ffield,name2, Adfield,idNumber,
@@ -1476,7 +1491,7 @@ import java.util.concurrent.CompletableFuture;
             photoButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    String fileType = "";
+               //     String fileType = "";
                     JFileChooser jFileChooser = new JFileChooser();
                     jFileChooser.setFileSelectionMode(JFileChooser.APPROVE_OPTION);
                     int result = jFileChooser.showOpenDialog(null);
@@ -1484,7 +1499,7 @@ import java.util.concurrent.CompletableFuture;
                     {
                         System.exit(1);
                     }
-                    File file = jFileChooser.getSelectedFile();
+                     file = jFileChooser.getSelectedFile();
                     if(file.getName().equals(""))
                     {
                         photoImage.setText("C:\\church\\rccgsmall1.jpg");
@@ -1502,42 +1517,16 @@ import java.util.concurrent.CompletableFuture;
                         photoImage.setText("C:\\church\\rccgsmall1.jpg");
                     }
 
-                   // if (photoImage.getText().endsWith("jpg")) {
-                   //      fileType = "jpg";
-                   // }
-                  //  else if (photoImage.getText().endsWith("jif")) {
-                 //        fileType = "jif";
-                 //   }
-                //    else if (photoImage.getText().endsWith("jpeg")) {
-                //         fileType = "jpeg";
-                //    }
-                //    else if (photoImage.getText().endsWith("png")) {
-                //         fileType = "png";
-                //    }
-                  //  BufferedImage bufferedImage = null;
-                  //  BufferedImage saveBufferedImage = null;
-                  //  try {
-                  //          bufferedImage = ImageIO.read(new File(photoImage.getText()));
-                  //  } catch (IOException ex) {
-                  //      throw new RuntimeException(ex);
-                  //  }
-             //       Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_SMOOTH);
-             //       File saveFile = new File("C:\\church\\" + file.getName() + "1." + fileType);
-             //       try {
-             //           ImageIO.write(ImageConversion.convertToBufferedImage(images),fileType,saveFile);
-             //           photoImage.setText("C:\\church\\" + file.getName()+"1." + fileType);
-             //       } catch (IOException ex) {
-             //           throw new RuntimeException(ex);
-               //     }
+
 
                 }
+//from hear
             });
             searchButton.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent event)
                 {
                     String no = idfield.getText();
-                    System.out.println(no);
                     searchMember = churchService.displayMethod(no);
                     if (searchMember != null)
                     {
@@ -1581,13 +1570,56 @@ import java.util.concurrent.CompletableFuture;
 
             submit.addActionListener(new ActionListener()
             {
-                public void actionPerformed(ActionEvent e)
-                {
-                    churchService.updateMemberInfo(idNumber.getText(), Adfield.getText(), datebirth.getText(),
-                             ffield.getText(), name1.getText(), sfield.getText(),
+                public void actionPerformed(ActionEvent e) {
+                    if (photoImage.getText().endsWith("jpg")) {
+                        fileType = "jpg";
+                    } else if (photoImage.getText().endsWith("jif")) {
+                        fileType = "jif";
+                    } else if (photoImage.getText().endsWith("jpeg")) {
+                        fileType = "jpeg";
+                    } else if (photoImage.getText().endsWith("png")) {
+                        fileType = "png";
+                    }
+                    BufferedImage bufferedImage = null;
+                    BufferedImage saveBufferedImage = null;
+                    try {
+                        bufferedImage = ImageIO.read(new File(photoImage.getText()));
+
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    String fileName = "";
+
+                    fileName = photoImage.getText();
+                    String[] fileNameArray = fileName.split("\\\\");
+                    int lens = fileNameArray.length;
+                    System.out.println(fileName);
+                    System.out.println(fileNameArray[lens - 1]);
+                    System.out.println("fileName");
+
+                    //    Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_SMOOTH);
+                    File saveFile = new File("C:\\church\\" + fileNameArray[lens - 1]);
+                    try {
+                        ImageIO.write(ImageConversion.convertToBufferedImage(bufferedImage), fileType, saveFile);
+                        System.out.println(ImageIO.write(ImageConversion.convertToBufferedImage(bufferedImage), fileType, saveFile));
+                        photoImage.setText("C:\\church\\" + fileNameArray[lens - 1]);
+
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+/// new addition for picture update
+
+                    int v = churchService.updateMemberInfo(idNumber.getText(), Adfield.getText(), datebirth.getText(),
+                            ffield.getText(), name1.getText(), sfield.getText(),
                             phoneNum.getText(), sex.getText(),
                             photoImage.getText(),
                             idfield.getText());
+                    if (v > 0) {
+                        JOptionPane.showMessageDialog(null, "Successful");
+                    } else{
+                        JOptionPane.showMessageDialog(null, " Not Successful");
+                }
                     sfield.setEditable(true);
                     ffield.setEditable(true);
                     idfield.setEditable(true);
@@ -1613,6 +1645,12 @@ import java.util.concurrent.CompletableFuture;
                     datebirth.setText("");
                     photoImage.setText("");
                     sex.setText("");
+
+                    churchService.updateSerialMemberInfo(idNumber.getText(), Adfield.getText(), datebirth.getText(),
+                                    ffield.getText(), name1.getText(), sfield.getText(),
+                                    phoneNum.getText(), sex.getText(),
+                                    photoImage.getText(),
+                                    idfield.getText());
 
                 }
             });
@@ -1667,7 +1705,7 @@ import java.util.concurrent.CompletableFuture;
             total.add(panel, "South");
             add(total, "South");
             submit.addActionListener(new ActionListener() {
-                Member idMember ;
+                SerialMember idMember ;
                 public void actionPerformed(ActionEvent e) {
                         List<Member> searchMember = new ArrayList<>();
 
@@ -1682,28 +1720,29 @@ import java.util.concurrent.CompletableFuture;
 
 
                         }
-                        columnSearch = new String[]{ "member_photo","id", "sex", "last_name", "first_name", "address", "date_born", "phone", "status",
+                        columnSearch = new String[]{"serial_number", "member_photo","id", "sex", "last_name", "first_name", "address", "date_born", "phone", "status",
                                 "attendance", "register_date", "resent"};
                 //    columnSearch = new String[]{ "id", "sex", "last_name", "first_name", "address", "date_born", "phone", "status",
                 //            "attendance", "register_date", "resent"};
-                        searchObjects = new Object[1][12];
+                        searchObjects = new Object[1][13];
                         BufferedImage bufferedImage = null;
                     try {
-                        bufferedImage = ImageIO.read(new File(idMember.getMemberPhoto()));
-                        Image images = bufferedImage.getScaledInstance(150,120,Image.SCALE_SMOOTH);
-                        image.setIcon( new ImageIcon(images,""));
-                        searchObjects[0][0] = image;
-                        searchObjects[0][1] = idMember.getId();
-                        searchObjects[0][2] = idMember.getSex();
-                        searchObjects[0][3] = idMember.getLastName();
-                        searchObjects[0][4] = idMember.getFirstName();
-                        searchObjects[0][5] = idMember.getAddress();
-                        searchObjects[0][6] = idMember.getDateBorn();
-                        searchObjects[0][7] = idMember.getPhone();
-                        searchObjects[0][8] = idMember.getStatus();
-                        searchObjects[0][9] = idMember.getAttendance();
-                        searchObjects[0][10] = idMember.getRegisterDate();
-                        searchObjects[0][11] = idMember.getResent();
+                     //   bufferedImage = ImageIO.read(new File(idMember.getMemberPhoto()));
+                       // Image images = bufferedImage.getScaledInstance(150,120,Image.SCALE_SMOOTH);
+                        image.setIcon(new ImageIcon(idMember.getMemberPhoto()));
+                        searchObjects[0][0] = idMember.getSerialNumber();
+                        searchObjects[0][1] = image;
+                        searchObjects[0][2] = idMember.getId();
+                        searchObjects[0][3] = idMember.getSex();
+                        searchObjects[0][4] = idMember.getLastName();
+                        searchObjects[0][5] = idMember.getFirstName();
+                        searchObjects[0][6] = idMember.getAddress();
+                        searchObjects[0][7] = idMember.getDateBorn();
+                        searchObjects[0][8] = idMember.getPhone();
+                        searchObjects[0][9] = idMember.getStatus();
+                        searchObjects[0][10] = idMember.getAttendance();
+                        searchObjects[0][11] = idMember.getRegisterDate();
+                        searchObjects[0][12] = idMember.getResent();
                         resultTable = new JTable(searchObjects,columnSearch);
                         add(new JScrollPane(resultTable), "Center");
                         imageRendererClass.setSetTable(resultTable);
@@ -1712,8 +1751,6 @@ import java.util.concurrent.CompletableFuture;
 
                     } catch (IllegalStateException sql) {
                         sql.printStackTrace();
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
                     }
 
                     setSize(1600, 550);
@@ -2276,38 +2313,36 @@ import java.util.concurrent.CompletableFuture;
             search.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                   List<Member> allMember = churchService.findAllMember();
+                   List<SerialMember> allMember = churchService.findAllMember();
                     int size = allMember.size();
-                    objects = new Object[size][12];
-                    columnObject = new String[]{ "member_photo","id", "sex", "last_name", "first_name", "address", "date_born", "phone", "status",
+                    objects = new Object[size][13];
+                    columnObject = new String[]{"Serial_Number", "member_photo","id", "sex", "last_name", "first_name", "address", "date_born", "phone", "status",
                             "attendance", "register_date", "resent"};
                     for(int i =0; i<size; i++)
                     {
-                        /*JLabel image = new JLabel();
+                        JLabel image = new JLabel();
                             if(allMember.get(i).getMemberPhoto().equalsIgnoreCase("")||allMember.get(i).getMemberPhoto()==null) {
                                 image.setIcon(new ImageIcon("C:\\church\\rccgsmall.jpg"));
-                            }*/
+                            }
                      //       image.setIcon(new ImageIcon(ImageIO.read()));
                      //   File file = new File(allMember.get(i).getMemberPhoto());
-                     //   image.setIcon(new ImageIcon(allMember.get(i).getMemberPhoto()));
+                        image.setIcon(new ImageIcon(allMember.get(i).getMemberPhoto()));
+                        objects[i][0] = allMember.get(i).getSerialNumber();
+                        objects[i][1] = image;
+                        objects[i][2] = allMember.get(i).getId();
+                        objects[i][3] = allMember.get(i).getSex();
+                        objects[i][4] = allMember.get(i).getFirstName();
+                        objects[i][5] = allMember.get(i).getLastName();
+                        objects[i][6] = allMember.get(i).getAddress();
+                        objects[i][7] = allMember.get(i).getDateBorn();
+                        objects[i][8] = allMember.get(i).getPhone();
+                        objects[i][9] = allMember.get(i).getStatus();
+                        objects[i][10] = allMember.get(i).getAttendance();
+                        objects[i][11] = allMember.get(i).getRegisterDate();
+                        objects[i][12] = allMember.get(i).getResent();
 
-                        /*objects[i][0] = file;
-                        objects[i][1] = allMember.get(i).getId();
-                        objects[i][2] = allMember.get(i).getSex();
-                        objects[i][3] = allMember.get(i).getFirstName();
-                        objects[i][4] = allMember.get(i).getLastName();
-                        objects[i][5] = allMember.get(i).getAddress();
-                        objects[i][6] = allMember.get(i).getDateBorn();
-                        objects[i][7] = allMember.get(i).getPhone();
-                        objects[i][8] = allMember.get(i).getStatus();
-                        objects[i][9] = allMember.get(i).getAttendance();
-                        objects[i][10] = allMember.get(i).getRegisterDate();
-                        objects[i][11] = allMember.get(i).getResent();*/
-
-                   //     imageObjectResize[i] = new ImageObjectResize(objects[i],new ImageConversion());
 
                     }
-                    System.out.println(System.currentTimeMillis());
                     memberList = new MemberList(allMember);
                     memberList.setSizeMethod(size);
                     objects = memberList.getResultingObject();
@@ -2321,7 +2356,6 @@ import java.util.concurrent.CompletableFuture;
                     resultTable.getColumn("member_photo").setCellRenderer( imageRendererClass);
                     resultTable.setCellSelectionEnabled(true);
                     resultTable.getColumnModel().getColumn(0).setPreferredWidth(150);
-                    System.out.println("time taken  : " + System.currentTimeMillis());
                     setSize(1200, 550);
                     setLocation(100, 100);
                 }
@@ -2355,11 +2389,12 @@ import java.util.concurrent.CompletableFuture;
         private JList<String> searchList;
         private JTextArea displayArea;
 
-        private String[] searchText = new String[]{"MALE", "FEMALE", "SINGLE", "MARRIED"};
+        private String[] searchText = new String[]{"MALE", "FEMALE", "SINGLE", "MARRIED","member"};
         private String[] sqlText = new String[]{"SELECT FIRST_NAME,LAST_NAME,ADDRESS,Phone FROM MEMBER WHERE SEX = 'MALE'",
                 "SELECT FIRST_NAME,LAST_NAME,ADDRESS,Phone FROM MEMBER WHERE SEX = 'FEMALE'",
                 " SELECT FIRST_NAME,LAST_NAME,ADDRESS,Phone FROM MEMBER WHERE STATUS = 'SINGLE'",
                 "SELECT FIRST_NAME,LAST_NAME,ADDRESS,Phone FROM MEMBER WHERE STATUS = 'MARRIED'",
+                "selection"
         };
 
         public Display(JFrame frame) {
@@ -2402,6 +2437,11 @@ import java.util.concurrent.CompletableFuture;
                     else if (searchList.getSelectedIndex()==3) {
                         churchService.marriedSelection(  searchList.getSelectedValue());
                     }
+                    else if(searchList.getSelectedIndex()==4)
+                    {
+                        churchService.MemberSelection();
+                    }
+
                     resultTable = new JTable(churchService);
 
                     add(new JScrollPane(resultTable), "Center");

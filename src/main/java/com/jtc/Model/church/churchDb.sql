@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS attendance;
 CREATE TABLE  Member
 (
     id varchar(100),
+    serial_number INT NOT NULL,
     sex varchar(100),
     last_name varchar(100),
     first_name varchar(100),
@@ -23,6 +24,25 @@ CREATE TABLE  Member
     in_church varchar(100),
     resent varchar(100),
     PRIMARY KEY(id)
+);
+CREATE TABLE Serial_Member
+(
+    serial_number INT,
+    id varchar(100),
+    serial_number INT NOT NULL,
+    sex varchar(100),
+    last_name varchar(100),
+    first_name varchar(100),
+    address varchar(255)NOT NULL,
+    date_born varchar(100),
+    phone varchar(100)NOT NULL,
+    marry varchar(100),
+    email_address varchar(100),<!----this actually represent the photo of the member by its address-->
+    attendance INT NOT NULL,
+    login_date varchar(100) NOT NULL,
+    in_church varchar(100),
+    resent varchar(100),
+    PRIMARY KEY(serial_number)
 );
 CREATE TABLE  workers
 (

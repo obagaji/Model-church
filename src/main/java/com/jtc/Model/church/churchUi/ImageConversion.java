@@ -9,11 +9,11 @@ public class ImageConversion {
     public static BufferedImage convertToBufferedImage(BufferedImage img) {
         // Create a buffered image with transparency
         BufferedImage bi = new BufferedImage(
-                120, 150,
-                BufferedImage.TYPE_INT_ARGB);
+                150, 120,
+                BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics2D = bi.createGraphics();
 
-        graphics2D.drawImage(img, 0, 0, 110,140, null);
+        graphics2D.drawImage(img, 0, 0, 150,120, null);
 
         graphics2D.dispose();
 

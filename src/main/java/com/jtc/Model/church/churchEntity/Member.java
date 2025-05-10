@@ -1,8 +1,6 @@
 package com.jtc.Model.church.churchEntity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 //import org.springframework.data.annotation.Id;
@@ -15,6 +13,8 @@ import lombok.Setter;
 //@Setter
 //@Getter
 public class Member {
+    
+
 
         @Id
         private String id;
