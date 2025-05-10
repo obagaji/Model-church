@@ -49,7 +49,7 @@ import java.util.Objects;
     private final JMenu searchMenu, attendanceG, about, admin, menu;
 
     private JMenuItem edit, allpeople,allLoginTime, menuName, addWork, newMenu, delete, login, display, workerItem, nonWorkerItem,
-            attendans, wAttendance, mAttendance, official,reset, us;
+            attendans, wAttendance, mAttendance, official,reset, newTable,us;
 
     private JMenuItem totalActivity, locateActivity, account, exit,acc,StaffOfice,wTimeAttendance,
             firstTimeResponse,addFirstTimer,firstTime;
@@ -101,6 +101,7 @@ import java.util.Objects;
         display = new JMenuItem("DISPLAY BIRTHDAY");
         display.setMnemonic('D');
         reset = new JMenuItem("RESET");
+        newTable = new JMenuItem("Fill Table");
         delete = new JMenuItem(" DELETE");
         newMenu = new JMenuItem(" ADD MEMBER");
         menuName.setMnemonic('D');
@@ -168,6 +169,8 @@ import java.util.Objects;
         searchMenu.add(display);
         searchMenu.addSeparator();
         searchMenu.add(reset);
+        searchMenu.addSeparator();
+        searchMenu.add(newTable);
         searchMenu.addSeparator();
         searchMenu.add(exit);
 
@@ -307,7 +310,28 @@ import java.util.Objects;
             }
         });
 
-         reset.addActionListener(new ActionListener() {
+         // add to new table
+        newTable.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                /*for (DateClass dateClass1: churchService.getAllDateClass())
+                {
+                    System.out.println("inside the method");
+                    churchService.newAddMember(churchService.displayMemberMethod(dateClass1.getIdmember()));
+
+                }
+                System.out.println(churchService.findAllMember().size());
+                System.out.println("churchService.findAllMember().size()");
+                System.out.println(churchService.findAllMemberWithoutSerial().size());
+                if (churchService.findAllMember().size()==churchService.findAllMemberWithoutSerial().size())
+                {
+                    System.out.println("inside the condition");
+                    JOptionPane.showMessageDialog(null,"Transfer sucessful");
+                }*/
+            }
+        });
+
+
+        reset.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int x = 0;
 
@@ -316,12 +340,8 @@ import java.util.Objects;
                     for (DateClass dateClass1: churchService.getAllDateClass())
                     {
                         x = churchService.updateAllDateClass(dateClass1.getIdmember(),"ABSENCE");
-                        if (churchService.findAllMember().isEmpty()||!churchService.displayName(dateClass1.getIdmember())) {
+                        if (churchService.findAllMember().isEmpty()||!churchService.displaySerialName(dateClass1.getIdmember())) {
                             churchService.newAddMember(churchService.displayMemberMethod(dateClass1.getIdmember()));
-                        }
-                        else
-                        {
-
                         }
 
                     }

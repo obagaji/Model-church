@@ -262,6 +262,38 @@ public class QueryImplementation extends AbstractTableModel {
             sqlException.printStackTrace();
         }
     }
+// FOR SERIAL MEMBER TABLE
+public boolean displaySerialName(String memberId)
+{
+    String name = "";
+
+    String sql = "SELECT id From serial_member where serial_member.id = ?";
+
+    try {
+
+        name = jdbcTemplate.queryForObject(sql,(rs, rowNum) -> rs.getString("id")
+                ,memberId);
+
+    }
+    catch(EmptyResultDataAccessException ex)
+    {
+        return false;
+    }
+
+    if (name!=null) {
+        if (name.equalsIgnoreCase(memberId))
+            return true;
+
+        else
+            return false;
+    }
+    else return false;
+
+
+}
+// FOR NON SERIAL TABLE
+
+
 
     public boolean displayName(String memberId)
     {
@@ -803,6 +835,22 @@ public class QueryImplementation extends AbstractTableModel {
         String sql = " UPDATE date_class set out_church = 'ABSENT'  && class_date = ? ";
        return  jdbcTemplate.update(sql, nowDate);
     }
+//
+public List<Member> findAllMemberWithoutSerial()
+{
+    String sql = "SELECT   member_photo, id, sex,last_name ,first_name ,address,date_born,phone,status," +
+            "attendance,register_date,resent FROM member";
+
+    List<Member> memberList= jdbcTemplate.query(sql,(rs, rowNum) -> new Member(rs.getString("id" ),
+            rs.getString("sex"),rs.getString("last_name"),
+            rs.getString("first_name"),rs.getString("address"),rs.getString("date_born"),
+            rs.getString("phone"),  rs.getString("status"),
+            rs.getInt("attendance"), rs.getString("register_date"),
+            rs.getString("resent"), rs.getString("member_photo")));
+
+    return memberList;
+}
+
 
     public List<SerialMember> findAllMember()
     {
