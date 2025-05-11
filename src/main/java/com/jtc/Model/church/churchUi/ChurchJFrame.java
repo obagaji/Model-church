@@ -313,6 +313,7 @@ import java.util.Objects;
          // add to new table
         newTable.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                churchService.deleteSerialMember();
                 /*for (DateClass dateClass1: churchService.getAllDateClass())
                 {
                     System.out.println("inside the method");
@@ -976,10 +977,6 @@ import java.util.Objects;
             setLocation(520, 410);
         }
     }
-    ///
-    ///
-    ///
-
 
     class WDialog extends JDialog {
 
@@ -2409,12 +2406,13 @@ import java.util.Objects;
         private JList<String> searchList;
         private JTextArea displayArea;
 
-        private String[] searchText = new String[]{"MALE", "FEMALE", "SINGLE", "MARRIED","member"};
+        private String[] searchText = new String[]{"MALE", "FEMALE", "SINGLE", "MARRIED","member","Old info"};
         private String[] sqlText = new String[]{"SELECT FIRST_NAME,LAST_NAME,ADDRESS,Phone FROM MEMBER WHERE SEX = 'MALE'",
                 "SELECT FIRST_NAME,LAST_NAME,ADDRESS,Phone FROM MEMBER WHERE SEX = 'FEMALE'",
                 " SELECT FIRST_NAME,LAST_NAME,ADDRESS,Phone FROM MEMBER WHERE STATUS = 'SINGLE'",
                 "SELECT FIRST_NAME,LAST_NAME,ADDRESS,Phone FROM MEMBER WHERE STATUS = 'MARRIED'",
-                "selection"
+                "selection",
+                "SELET FIRST_NAME,LAST_NAME,ADDRESS,Phone FROM MEMBER"
         };
 
         public Display(JFrame frame) {
@@ -2426,7 +2424,7 @@ import java.util.Objects;
             searchList = new JList<String>(searchText);
             displayArea = new JTextArea(3, 10);
             searchList.setEnabled(true);
-            searchList.setVisibleRowCount(4);
+            searchList.setVisibleRowCount(6);
             searchList.setSelectionMode(0);
             displayArea.setEditable(true);
             dis.setLayout(new FlowLayout());
@@ -2461,13 +2459,17 @@ import java.util.Objects;
                     {
                         churchService.MemberSelection();
                     }
+                    else if(searchList.getSelectedIndex()==5)
+                    {
+                        churchService.OldMemberSelection();
+                    }
 
                     resultTable = new JTable(churchService);
 
                     add(new JScrollPane(resultTable), "Center");
                     TableRowSorter<TableModel> sorter = new TableRowSorter(churchService);
                     resultTable.setRowSorter(sorter);
-                    setSize(1300, 600);
+                    setSize(1300, 800);
                     setLocation(100, 10);
 
                 }

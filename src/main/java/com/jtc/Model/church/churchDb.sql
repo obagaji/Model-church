@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS department;
 DROP TABLE IF EXISTS nonworker;
 DROP TABLE IF EXISTS maintenance;
 DROP TABLE IF EXISTS attendance;
+DROP TABLE IF EXISTS Serial_Member;
 
 CREATE TABLE  Member
 (
@@ -87,6 +88,12 @@ CREATE TABLE  maintenance
     supervisorId varchar(100) NOT NULL,
     status varchar(100) NOT NULL,
     remark varchar(255)
+);
+CREATE TABLE date_class
+(
+    idmember varchar(100) NOT NULL,
+    class_date varchar(100),
+,   out_church varchar(100)
 );
 CREATE TABLE  first_timer
 (

@@ -97,7 +97,12 @@ public class QueryImplementation extends AbstractTableModel {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+    // delete worker login attendance
+    private  int deleteWorkerLogin(String id)
+    {
+        String sql = "Delete from Workers_Login where Workers_Login.id =?";
+        return jdbcTemplate.update(sql, id);
+    }
 
     public int deleteNonMember(String id)
     {
@@ -111,6 +116,24 @@ public class QueryImplementation extends AbstractTableModel {
 
         return jdbcTemplate.update(sql,id);
     }
+    public int deleteSerialMemberWithId(String id)
+    {
+        String sql = " Delete from Serial_Member where serial_member.id=?  ";
+
+        return jdbcTemplate.update(sql,id);
+    }
+    public int deleteSerialMember()
+    {
+        String sql = " Delete from Serial_Member  ";
+        deleteFromWorker_Login();
+
+        return jdbcTemplate.update(sql);
+    }
+    private int deleteFromWorker_Login()
+    {
+        String sql = " Delete from Workers_Login ";
+        return jdbcTemplate.update(sql);
+    }
     public int deleteMember(String id)
     {
         String sql = " Delete from Member WHERE id = ?";
@@ -120,9 +143,9 @@ public class QueryImplementation extends AbstractTableModel {
         deleteWorker(id);
 
         deleteDateClass(id);
-
-
-        return jdbcTemplate.update(sql,id);
+        deleteSerialMemberWithId(id);
+        deleteWorkerLogin(id);
+        return 1; //jdbcTemplate.update(sql,id);
     }
     public int deleteDateClass(String memberId)
     {
@@ -743,6 +766,18 @@ public boolean displaySerialName(String memberId)
         }
     }
 
+    public void OldMemberSelection()
+    {
+        String sql = " Select  last_name, first_name, status ,address , phone , +" +
+                " register_date,resent from Member";
+        try {
+            setQuery( jdbcTemplate.queryForRowSet(sql));
+        }
+        catch (SQLException sqlException)
+        {
+            sqlException.printStackTrace();
+        }
+    }
 
 
     public void memberAttendanceTime(String searchDate)
