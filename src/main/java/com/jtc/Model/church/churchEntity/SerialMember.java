@@ -17,7 +17,7 @@ import lombok.Setter;
 public class SerialMember {
 
     @Id
-    private int serialNumber;
+    private int serial_number;
     private String id;
 
     private String sex;

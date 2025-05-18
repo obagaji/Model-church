@@ -2,14 +2,23 @@ package com.jtc.Model.church.churchEntity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.io.Serializable;
 
 @Entity
 //@AllArgsConstructor
 //@NoArgsConstructor
-//@Data
-public class WorkersLogin {
+@Getter
+@Setter
+
+public class WorkersLogin implements Serializable {
     @Id
    private String id;
+ //   public static final long serialVersionUID = 1234L;
    private String loginTime;
    private String memberStatus;
    private String loginDate;
@@ -23,7 +32,7 @@ public class WorkersLogin {
         this.memberStatus = memberStatus;
         this.loginDate = loginDate;
     }
-
+/*
     public String getWorkerTimeId() {
         return id;
     }
@@ -54,5 +63,5 @@ public class WorkersLogin {
 
     public void setLoginDate(String loginDate) {
         this.loginDate = loginDate;
-    }
+    }*/
 }

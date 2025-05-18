@@ -29,9 +29,8 @@ CREATE TABLE  Member
 );
 CREATE TABLE Serial_Member
 (
-    serial_number INT,
+    serial_number(INT) NOT NULL,
     id varchar(100),
-    serial_number INT NOT NULL,
     sex varchar(100),
     last_name varchar(100),
     first_name varchar(100),
@@ -60,12 +59,13 @@ CREATE TABLE workers_attendance
     workers_times TIME NOT NULL,
     attendance_id varchar(100) NOT NULL
 );
-CREATE TABLE workers_login
+CREATE TABLE Workers_Login
 (
     id varchar (100) NOT NULL,
     login_time varchar(100) NOT NULL,
     member_status varchar(50) NOT NULL,
-login_date varchar(50) NOT NULL
+    login_date varchar(50) NOT NULL,
+
 );
 CREATE TABLE  department
 (
@@ -110,7 +110,7 @@ CREATE TABLE  attendance
     attendance_female INT,
     attendance_male INT,
     attendance_children INT
-);
+)
 
 --INSERT INTO Member
 --(id, sex,last_name ,first_name ,address,date_born,phone,marry,email_address,attendance,login_date,in_church ,resent)

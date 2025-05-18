@@ -22,7 +22,7 @@ public class ImageObjectResize {
 
     public ImageObjectResize(SerialMember member,  ImageConversion imageConversion)
     {
-        object = new Object[13];
+        object = new Object[12];
         this.member = member;
         setObject(member);
         imageResize(imageConversion, member.getMemberPhoto());
@@ -43,26 +43,26 @@ public class ImageObjectResize {
     }
 
     public Object[] getObject() {
-        object[1] = jLabel;
+        object[0] = jLabel;
 
         return object;
     }
 
     public void setObject(SerialMember  objects ) {
 
-        object[0] = objects.getSerialNumber();
-        object[1] = objects.getMemberPhoto();
-        object[2] = objects.getId();
-        object[3] = objects.getSex();
-        object[4] = objects.getFirstName();
-        object[5] = objects.getLastName();
-        object[6] = objects.getAddress();
-        object[7] = objects.getDateBorn();
-        object[8] = objects.getPhone();
-        object[9] = objects.getStatus();
-        object[10] = objects.getAttendance();
-        object[11] = objects.getRegisterDate();
-        object[12] = objects.getResent();
+    //    object[0] = ;
+        object[0] = objects.getMemberPhoto();
+        object[1] = objects.getId();
+        object[2] = objects.getSex();
+        object[3] = objects.getFirstName();
+        object[4] = objects.getLastName();
+        object[5] = objects.getAddress();
+        object[6] = objects.getDateBorn();
+        object[7] = objects.getPhone();
+        object[8] = objects.getStatus();
+        object[9] = objects.getAttendance();
+        object[10] = objects.getRegisterDate();
+        object[11] = objects.getResent();
 
     }
 

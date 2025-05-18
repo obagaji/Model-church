@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.jtc</groupId>
 	<artifactId>assimilation-application</artifactId>
-	<version>2.0.1-SNAPSHOT</version>
+	<version>2.0.3-SNAPSHOT</version>
 	<name>assimilation-application</name>
 	<description>operational application for church </description>
 	<properties>

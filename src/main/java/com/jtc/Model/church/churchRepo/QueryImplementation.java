@@ -125,8 +125,7 @@ public class QueryImplementation extends AbstractTableModel {
     public int deleteSerialMember()
     {
         String sql = " Delete from Serial_Member  ";
-        deleteFromWorker_Login();
-
+    //    deleteFromWorker_Login();
         return jdbcTemplate.update(sql);
     }
     private int deleteFromWorker_Login()
@@ -139,13 +138,11 @@ public class QueryImplementation extends AbstractTableModel {
         String sql = " Delete from Member WHERE id = ?";
 
         deleteNonMember(id);
-
         deleteWorker(id);
-
         deleteDateClass(id);
         deleteSerialMemberWithId(id);
         deleteWorkerLogin(id);
-        return 1; //jdbcTemplate.update(sql,id);
+        return jdbcTemplate.update(sql,id); //
     }
     public int deleteDateClass(String memberId)
     {
@@ -243,9 +240,7 @@ public class QueryImplementation extends AbstractTableModel {
 
         objects[1] = last;
 
-        String sql = "SELECT * FROM member  WHERE member.first_name = ? "  +
-                "UNION" +
-                "SELECT * FROM member WHERE  member.last_name = ? ";
+        String sql = "SELECT * FROM member  WHERE member.first_name = ? OR member.last_name = ?";
 
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Member(rs.getString("id"),
                 rs.getString("sex"), rs.getString("last_name"), rs.getString("first_name"), rs.getString("address"),
@@ -532,7 +527,7 @@ public boolean displaySerialName(String memberId)
 
     public void selectOutSunday(String notPresent)
     {
-        String sql = "SELECT Serial_Member.serial_number,Serial_Member.id, Serial_Member.sex,Serial_Member.last_name ,Serial_Member.first_name " +
+        String sql = "SELECT Serial_Member.id, Serial_Member.sex,Serial_Member.last_name ,Serial_Member.first_name " +
                 ",Serial_Member.address,Serial_Member.phone,Serial_Member.status," +
                 "Serial_Member.attendance ,Serial_Member.resent FROM Serial_Member " +
                 "INNER JOIN date_class ON Serial_Member.id = date_class.idmember WHERE out_church = ?";
@@ -688,14 +683,14 @@ public boolean displaySerialName(String memberId)
 
     // create a new table where you add a new column to the existing table for memebers
     public int newAddMember(Member member)  {
-        String sql = " INSERT INTO Serial_Member (serial_number,id,sex,last_name,first_name,address,date_born,phone,status," +
+        String sql = " INSERT INTO Serial_Member (serial_number, id,sex,last_name,first_name,address,date_born,phone,status," +
                 "attendance,register_date,resent" +
                 ",member_photo" +
                 ")VALUES(?,?,?,?,?,?,?,?,?,?,?,?" +
                 ",?" +
                 ")";
-        int value = getMax();
-        return jdbcTemplate.update(sql,value, member.getId(),member.getSex(),member.getLastName(),member.getFirstName()
+        int count = getMax();
+        return jdbcTemplate.update(sql, count, member.getId(),member.getSex(),member.getLastName(),member.getFirstName()
                 ,member.getAddress(),member.getDateBorn(),member.getPhone(),member.getStatus(),
                 member.getAttendance(),member.getRegisterDate(),member.getResent(),member.getMemberPhoto());
     }
@@ -768,7 +763,7 @@ public boolean displaySerialName(String memberId)
 
     public void OldMemberSelection()
     {
-        String sql = " Select  last_name, first_name, status ,address , phone , +" +
+        String sql = " Select id,  last_name, first_name, status ,address , phone , +" +
                 " register_date,resent from Member";
         try {
             setQuery( jdbcTemplate.queryForRowSet(sql));
@@ -778,7 +773,6 @@ public boolean displaySerialName(String memberId)
             sqlException.printStackTrace();
         }
     }
-
 
     public void memberAttendanceTime(String searchDate)
     {
@@ -792,6 +786,7 @@ public boolean displaySerialName(String memberId)
         }
 
     }
+    // there is a change of taught here so this method is not being use for now.
     public int updateWorkerAttendance(String loginTime,String useId)
     {
         String sql = "UPDATE Workers_Login SET login_Time = ? WHERE id = ?";
@@ -801,13 +796,14 @@ public boolean displaySerialName(String memberId)
     public int updateLoginMemberStatus(String loginStatus,String useId)
     {
         String sql = "UPDATE Workers_Login SET member_status = ? WHERE id = ?";
+
         return jdbcTemplate.update(sql,loginStatus,useId);
     }
 //INSERT INTO THE LOGIN TIME TABLE AS EVERY MEMBER IS CREATED.
     public int addWorkerAttendance(WorkersLogin workersAttendance)
     {
         String sql = " INSERT INTO Workers_Login ( id,login_Time,member_status,login_Date) VALUES(?,?,?,?)";
-        return jdbcTemplate.update(sql, workersAttendance.getWorkerTimeId(),workersAttendance.getLoginTime(),
+        return jdbcTemplate.update(sql, workersAttendance.getId(),workersAttendance, workersAttendance.getLoginTime(),
                 workersAttendance.getMemberStatus(),workersAttendance.getLoginDate());
     }
 
@@ -816,7 +812,7 @@ public boolean displaySerialName(String memberId)
     public void getAllLoginTime()
     {
         String sql = " SELECT serial_member.last_name, serial_member.first_name, Workers_Login.login_Time,Workers_Login.login_Date FROM serial_member " +
-                "INNER JOIN Workers_Login ON Workers_Login.id = serial_member.id ";
+                "INNER JOIN Workers_Login ON Workers_Login.id = serial_member.id order by serial_member.first_name ";
         try {
             setQuery(jdbcTemplate.queryForRowSet(sql));
         }
@@ -839,7 +835,7 @@ public boolean displaySerialName(String memberId)
                 " serial_member.attendance ,serial_member.register_date,serial_member.resent," +
                 "Workers_Login.login_Time" +
                 " FROM serial_member " +
-                "INNER JOIN Workers_Login ON Workers_Login.id = serial_member.id WHERE Workers_Login.member_status = 'Worker'";
+                "INNER JOIN Workers_Login ON Workers_Login.id = serial_member.id WHERE Workers_Login.member_status = 'Worker' order by serial_member.first_name";
         try {
             setQuery(jdbcTemplate.queryForRowSet(sql));
         }
@@ -855,7 +851,8 @@ public boolean displaySerialName(String memberId)
                 "serial_member.attendance ,serial_member.register_date,serial_member.resent," +
                 "Workers_Login.login_Time" +
                 " FROM serial_member " +
-                "INNER JOIN Workers_Login ON Workers_Login.id = serial_member.id WHERE Workers_Login.member_status = 'NONWORKER'";
+                "INNER JOIN Workers_Login ON Workers_Login.id = serial_member.id WHERE Workers_Login.member_status = 'NONWORKER' order by serial_member.first_name";
+      // String sql = "Select * from workers_login ";
         try {
             setQuery(jdbcTemplate.queryForRowSet(sql));
         }
@@ -876,20 +873,18 @@ public List<Member> findAllMemberWithoutSerial()
     String sql = "SELECT   member_photo, id, sex,last_name ,first_name ,address,date_born,phone,status," +
             "attendance,register_date,resent FROM member";
 
-    List<Member> memberList= jdbcTemplate.query(sql,(rs, rowNum) -> new Member(rs.getString("id" ),
+    return jdbcTemplate.query(sql,(rs, rowNum) -> new Member(rs.getString("id" ),
             rs.getString("sex"),rs.getString("last_name"),
             rs.getString("first_name"),rs.getString("address"),rs.getString("date_born"),
             rs.getString("phone"),  rs.getString("status"),
             rs.getInt("attendance"), rs.getString("register_date"),
             rs.getString("resent"), rs.getString("member_photo")));
-
-    return memberList;
 }
 
 
     public List<SerialMember> findAllMember()
     {
-        String sql = "SELECT serial_number,  member_photo, id, sex,last_name ,first_name ,address,date_born,phone,status," +
+        String sql = "SELECT serial_number, member_photo, id, sex,last_name ,first_name ,address,date_born,phone,status," +
                 "attendance,register_date,resent FROM Serial_Member";
 
         List<SerialMember> memberList= jdbcTemplate.query(sql,(rs, rowNum) -> new SerialMember(rs.getInt("serial_number"),rs.getString("id" ),
