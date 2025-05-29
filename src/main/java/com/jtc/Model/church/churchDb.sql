@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS workers_login;
 
 CREATE TABLE  Member
 (
-    id varchar(100),
+    id varchar(100) NOT NULL,
     serial_number INT NOT NULL,
     sex varchar(100),
     last_name varchar(100),
@@ -30,7 +30,7 @@ CREATE TABLE  Member
 CREATE TABLE Serial_Member
 (
     serial_number(INT) NOT NULL,
-    id varchar(100),
+    id varchar(100) NOT NULL,
     sex varchar(100),
     last_name varchar(100),
     first_name varchar(100),
@@ -42,8 +42,9 @@ CREATE TABLE Serial_Member
     attendance INT NOT NULL,
     login_date varchar(100) NOT NULL,
     in_church varchar(100),
-    resent varchar(100),
+    resent varchar(100)
     PRIMARY KEY(serial_number)
+
 );
 CREATE TABLE  workers
 (
