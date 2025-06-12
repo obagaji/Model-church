@@ -14,6 +14,7 @@ import javax.swing.table.AbstractTableModel;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 
 @Component
@@ -816,22 +817,36 @@ public boolean displaySerialName(String memberId)
         var x = jdbcTemplate.update(sql, loginTime,loginDate,loginId);
         return x;
     }
+    private String loginDate()
+    {
 
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        String loginDates = dateFormat.format(new Date());
+        return loginDates;
+    }
 
     //get all the login time
     public List<AllLoginTime> getAllLoginTime()
     {
+        String loginDates = loginDate();
+
         String sql = " SELECT member.last_name, member.first_name, Workers_Login.login_Time,Workers_Login.login_Date FROM member " +
-                "INNER JOIN Workers_Login ON Workers_Login.id = member.id order by member.first_name ";
+                "INNER JOIN Workers_Login ON Workers_Login.id = member.id where Workers_Login.login_Date=? order by member.first_name ";
         return jdbcTemplate.query(sql,(rs, rowNum) -> new AllLoginTime(rs.getString("last_name" ),
                 rs.getString("first_name"),rs.getString("login_Time"),
-                rs.getString("login_Date")));
+                rs.getString("login_Date")),loginDates);
     }
     // get the information about  a member from the worker login table
     public String getAttendanceIdMember(String id)
     {
         String sql = " Select member_status from Workers_Login where id=? ";
         return jdbcTemplate.queryForObject(sql,String.class,id);
+
+    }
+    public List<String> getWorkerIdWorkerLogin()
+    {
+        String sql = " Select id from Workers_Login where Workers_Login.member_Status='NONWORKER' ";
+        return jdbcTemplate.queryForList(sql,String.class);
 
     }
     // GET ALL THE WORKERS LOGIN TIME
@@ -841,10 +856,10 @@ public boolean displaySerialName(String memberId)
                 " member.attendance ," +
                 "Workers_Login.login_Time" +
                 " FROM member " +
-                "INNER JOIN Workers_Login ON Workers_Login.id = member.id WHERE Workers_Login.member_status = 'Worker' order by member.first_name";
+                "INNER JOIN Workers_Login ON Workers_Login.id = member.id WHERE Workers_Login.member_status = 'Worker' AND Workers_Login.login_date=? order by member.first_name";
         return jdbcTemplate.query(sql,(rs, rowNum) -> new AllWorkersLogin(rs.getString("last_name" ),
-                rs.getString("first_name"),rs.getString("address "),
-                rs.getString("phone"),rs.getInt("attendance"),rs.getString("login_Time")));
+                rs.getString("first_name"),rs.getString("address"),
+                rs.getString("phone"),rs.getInt("attendance"),rs.getString("login_Time")),loginDate());
     }
 // GET ALL THE ATTENDANCE OF ALL MEMBERS REGISTERED IN THE DATA BASE, NOT ONLY WORKERS
     public List<AllWorkersLogin> getAllMembersAttendanceTime()
@@ -853,10 +868,10 @@ public boolean displaySerialName(String memberId)
                 "member.attendance ," +
                 "Workers_Login.login_Time" +
                 " FROM member " +
-                "INNER JOIN Workers_Login ON Workers_Login.id = member.id WHERE Workers_Login.member_status = 'NONWORKER' order by member.first_name";
+                "INNER JOIN Workers_Login ON Workers_Login.id = member.id WHERE Workers_Login.member_status = 'NONWORKER' AND Workers_Login.login_date=? order by member.first_name";
         return jdbcTemplate.query(sql,(rs, rowNum) -> new AllWorkersLogin(rs.getString("last_name" ),
                 rs.getString("first_name"),rs.getString("address"),
-                rs.getString("phone"),rs.getInt("attendance"),rs.getString("login_Time")));
+                rs.getString("phone"),rs.getInt("attendance"),rs.getString("login_Time")),loginDate());
     }
 
     public int setAllMemberToAbsent(String nowDate)

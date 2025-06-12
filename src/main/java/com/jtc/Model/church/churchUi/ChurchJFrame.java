@@ -38,6 +38,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 
+import static java.util.Arrays.stream;
+
 /*
 * The springframework stereotype annotation will help spring to pick the class and includes
 * it by generating a bean for it.
@@ -970,17 +972,20 @@ class SundayActivityDialog extends JDialog {
                                     displayL.setText("WELCOME TO RCCG NEW CONVENENT MODEL PARISH");
                                     animationTimer = new Timer(1500, new TimerClass());
                                     animationTimer.start();
-                                } else if (animationTimer.isRunning()) {
-                                    displayNames = checkMember.get(0);
-                                    if (displayNames != null) {
-                                        display1.setText(displayNames.getFirstName());
-                                        display2.setText(displayNames.getLastName());
+                                } else {
+                                    if (animationTimer.isRunning()) {
+                                    //    animationTimer.restart();
+                                        displayNames = checkMember.get(0);
+                                        if (displayNames != null) {
+                                            display1.setText(displayNames.getFirstName());
+                                            display2.setText(displayNames.getLastName());
+                                        }
+                                        display3.setText(" ");
+                                        displayL.setFont(new Font("Serif", 1, 36));
+                                        //displayL.setText("WELCOME TO LEADING EDGE CHRISTAIN CENTER");
+                                        displayL.setText("WELCOME TO RCCG NEW CONVENENT MODEL PARISH");
+                                        animationTimer.restart();
                                     }
-                                    display3.setText(" ");
-                                    displayL.setFont(new Font("Serif", 1, 36));
-                                    //displayL.setText("WELCOME TO LEADING EDGE CHRISTAIN CENTER");
-                                    displayL.setText("WELCOME TO RCCG NEW CONVENENT MODEL PARISH");
-                                    animationTimer.restart();
                                 }
                             }
                         }
@@ -1039,19 +1044,22 @@ class SundayActivityDialog extends JDialog {
                                         animationTimer = new Timer(1500, new TimerClass());
                                         animationTimer.start();
 
-                                    } else if (!animationTimer.isRunning()) {
-                                        displayNames = checkMember.get(0);
-                                        if (displayNames != null) {
-                                            display1.setText(displayNames.getFirstName());
-                                            display2.setText(displayNames.getLastName());
+                                    } else {
+                                        if (animationTimer.isRunning()) {
+                                      //      animationTimer.restart();
+                                            displayNames = checkMember.get(0);
+                                            if (displayNames != null) {
+                                                display1.setText(displayNames.getFirstName());
+                                                display2.setText(displayNames.getLastName());
 
+                                            }
+                                            display3.setText(" ");
+                                            displayL.setFont(new Font("Serif", 1, 36));
+
+                                            // displayL.setText("WELCOME TO LEADING EDGE CHRISTAIN CENTER");
+                                            displayL.setText("WELCOME TO RCCG NEW CONVENENT MODEL PARISH");
+                                            animationTimer.restart();
                                         }
-                                        display3.setText(" ");
-                                        displayL.setFont(new Font("Serif", 1, 36));
-
-                                        // displayL.setText("WELCOME TO LEADING EDGE CHRISTAIN CENTER");
-                                        displayL.setText("WELCOME TO RCCG NEW CONVENENT MODEL PARISH");
-                                        animationTimer.restart();
                                     }
                                 }
                             } else {
@@ -1069,7 +1077,22 @@ class SundayActivityDialog extends JDialog {
             setSize(850, 350);
             setLocation(300, 300);
         }
+        private  class TimerClass  implements ActionListener {
 
+            //  private JLabel welcomeLabel,display1,display2,display3,dONLabel,displayL,label;
+            public TimerClass() {
+                /*display1 = new JLabel("");
+                display2= new JLabel("");
+                display3= new JLabel("");*/
+            }
+            public void actionPerformed(ActionEvent action) {
+                display1.setText(" ");
+                display2.setText(" ");
+                display3.setText(" ");
+                displayL.setText(" ");
+
+            }
+        }
     }
     /*private String getTimeString()
     {
@@ -1079,23 +1102,7 @@ class SundayActivityDialog extends JDialog {
         return timeLog;
     }*/
 
-    class TimerClass  implements ActionListener {
 
-      //  private JLabel welcomeLabel,display1,display2,display3,dONLabel,displayL,label;
-        public TimerClass() {
-            display1 = new JLabel("");
-            display2= new JLabel("");
-            display3= new JLabel("");
-
-        }
-        public void actionPerformed(ActionEvent action) {
-            display1.setText(" ");
-            display2.setText(" ");
-            display3.setText(" ");
-            displayL.setText(" ");
-
-        }
-    }
 
     class WAttendanceDialog extends JDialog {
 
@@ -2066,6 +2073,7 @@ class SundayActivityDialog extends JDialog {
                     dataWorkers = new Workers(idText.getText(), position.getText(), nonWorker.getJoinDate(), arrayBuffer.toString());
                     churchService.addWorker(dataWorkers);
 //  the member that has been added to the worker table will be deleted from the member table automatically.
+                    churchService.updateLoginMemberStatus("Worker",idText.getText());
                     churchService.deleteNonMember(idText.getText());
 
                     idText.setText("");
@@ -2355,7 +2363,20 @@ class SundayActivityDialog extends JDialog {
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                   List<AllWorkIng> workers = churchService.getAllWorkers();
+                   List<AllWorkIng> worker = churchService.getAllWorkers();
+                   List<String>workerId = churchService.getWorkerIdWorkerLogin();//get all id with nonmember status
+
+                    for (String id: workerId)
+                    {
+                        List<AllWorkIng>idList = worker.stream().filter(x -> x.id().equalsIgnoreCase(id)).toList();
+
+                        if (!idList.isEmpty())
+                        {
+                            churchService.updateLoginMemberStatus("Worker",id);
+
+                        }
+                    }
+                    List<AllWorkIng> workers = churchService.getAllWorkers();
                    var size = workers.size();
                     var numbs =1;
                    objects = new Object[size][13];
@@ -2375,9 +2396,6 @@ class SundayActivityDialog extends JDialog {
                         objects[i][11] = workers.get(i).depart_names();
                         objects[i][12] = workers.get(i).worker_position();
                     }
-
-
-
                     //    churchService.getAllWorkersAttendanceTime();
                     resultTable = new JTable(objects,columnSize);
                     add(new JScrollPane(resultTable), "Center");
@@ -2519,13 +2537,13 @@ class SundayActivityDialog extends JDialog {
                         for (int i = 0; i < size; i++) {
                             object[i][0] = numbs++;
                             object[i][1] = listInOut.get(i).id();
-                            object[i][2] = listInOut.get(i).id();
-                            object[i][3] = listInOut.get(i).id();
-                            object[i][4] = listInOut.get(i).id();
-                            object[i][5] = listInOut.get(i).id();
-                            object[i][6] = listInOut.get(i).id();
-                            object[i][7] = listInOut.get(i).id();
-                            object[i][8] = listInOut.get(i).id();
+                            object[i][2] = listInOut.get(i).sex();
+                            object[i][3] = listInOut.get(i).last_name();
+                            object[i][4] = listInOut.get(i).first_name();
+                            object[i][5] = listInOut.get(i).address();
+                            object[i][6] = listInOut.get(i).phone();
+                            object[i][7] = listInOut.get(i).attendance();
+                            object[i][8] = listInOut.get(i).resent();
                         }
                         resultTable = new JTable(object,columnSize);
                         add(new JScrollPane(resultTable), "Center");
