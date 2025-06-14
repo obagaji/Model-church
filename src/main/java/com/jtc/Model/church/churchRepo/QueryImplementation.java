@@ -863,12 +863,12 @@ public boolean displaySerialName(String memberId)
     }
 // GET ALL THE ATTENDANCE OF ALL MEMBERS REGISTERED IN THE DATA BASE, NOT ONLY WORKERS
     public List<AllWorkersLogin> getAllMembersAttendanceTime()
-    {
+    {//Workers_Login.member_status = 'NONWORKER' AND
         String sql = " SELECT DISTINCT member.last_name, member.first_name,member.address , member.phone ," +
                 "member.attendance ," +
                 "Workers_Login.login_Time" +
                 " FROM member " +
-                "INNER JOIN Workers_Login ON Workers_Login.id = member.id WHERE Workers_Login.member_status = 'NONWORKER' AND Workers_Login.login_date=? order by member.first_name";
+                "INNER JOIN Workers_Login ON Workers_Login.id = member.id WHERE Workers_Login.login_date=? order by member.first_name";
         return jdbcTemplate.query(sql,(rs, rowNum) -> new AllWorkersLogin(rs.getString("last_name" ),
                 rs.getString("first_name"),rs.getString("address"),
                 rs.getString("phone"),rs.getInt("attendance"),rs.getString("login_Time")),loginDate());

@@ -146,8 +146,8 @@ import static java.util.Arrays.stream;
         menu.add(acc);
         menu.addSeparator();
         menu.add(locateActivity);
-        menu.addSeparator();
-        menu.add(allLoginTime);
+       // menu.addSeparator();
+       // menu.add(allLoginTime);
 
         about = new JMenu("ABOUT");
         about.setText("  ABOUT");
@@ -163,8 +163,8 @@ import static java.util.Arrays.stream;
         attendanceG.add(mAttendance);
         attendanceG.addSeparator();
         attendanceG.add(wAttendance);
-        attendanceG.addSeparator();
-        attendanceG.add(wTimeAttendance);
+     //   attendanceG.addSeparator();
+     //   attendanceG.add(wTimeAttendance);
 
         searchMenu = new JMenu();
         searchMenu.setText("LOGIN");
@@ -177,10 +177,10 @@ import static java.util.Arrays.stream;
         searchMenu.add(displayBirth);
         searchMenu.addSeparator();
         searchMenu.add(reset);
-        searchMenu.addSeparator();
-        searchMenu.add(newTable);
-        searchMenu.addSeparator();
-        searchMenu.add(createNewTableUpdateImage);
+      //  searchMenu.addSeparator();
+      //  searchMenu.add(newTable);
+    //    searchMenu.addSeparator();
+    //    searchMenu.add(createNewTableUpdateImage);
         searchMenu.addSeparator();
         searchMenu.add(UpdateImageSize);
         searchMenu.addSeparator();
@@ -1115,7 +1115,7 @@ class SundayActivityDialog extends JDialog {
         private Object[][] objects;
 
         public WAttendanceDialog(JFrame wFrame) {
-            super(wFrame, "    VIEW ALL MEMBERS ATTENDANCE TIME FOR THE WEEK           ", null);
+            super(wFrame, "    VIEW ALL ATTENDANCE TIME FOR THE WEEK           ", null);
             setLayout(new BorderLayout());
             JPanel panel = new JPanel();
             JPanel panels = new JPanel();
