@@ -96,7 +96,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>NCMP assimilation</finalName>
 	</build>
     <distributionManagement>
         <repository>
