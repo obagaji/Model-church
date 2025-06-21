@@ -2181,17 +2181,17 @@ class SundayActivityDialog extends JDialog {
                     File file = jFileChooser.getSelectedFile();
                     if(file.getName().equals(""))
                     {
-                        photoImage.setText("C:\\church\\LECCnew.png");
+                        photoImage.setText("src/main/resources/picture/churchone.jpg");
                     }
                     try {
                         file.getAbsolutePath();
                         if(file==null)
-                            photoImage.setText("C:\\church\\LECCnew.png");
+                            photoImage.setText("src/main/resources/picture/churchone.jpg");
 
                     }
                     catch (NullPointerException nullPointerException)
                     {
-                        photoImage.setText("C:\\church\\LECCnew.png");
+                        photoImage.setText("src/main/resources/picture/churchone.jpg");
                     }
                       photoImage.setText(file.getAbsolutePath());
                     if (photoImage.getText().endsWith("jpg")) {
@@ -2223,98 +2223,88 @@ class SundayActivityDialog extends JDialog {
                     }
                 }
             });
-            searchButton.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent event)
-                {
+
+            searchButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent event) {
                     String no = idfield.getText();
                     String fileTypes = "";
                     searchMember = churchService.displayMemberMethod(no);
-                    if (searchMember != null)
-                    {
+                    if (searchMember != null) {
                         photoImage.setText(searchMember.getMemberPhoto());
                         //
 
                         if (photoImage.getText().endsWith("jpg")) {
                             fileTypes = "jpg";
-                        }
-                        else if (photoImage.getText().endsWith("jif")) {
+                        } else if (photoImage.getText().endsWith("jif")) {
                             fileTypes = "jif";
-                        }
-                        else if (photoImage.getText().endsWith("jpeg")) {
+                        } else if (photoImage.getText().endsWith("jpeg")) {
                             fileTypes = "jpeg";
-                        }
-                        else if (photoImage.getText().endsWith("png")) {
+                        } else if (photoImage.getText().endsWith("png")) {
                             fileTypes = "png";
                         }
-
-                        //  BufferedImage bufferedImage = null;
-                        try {
-                            BufferedImage bufferedImage = ImageIO.read(new File(photoImage.getText()));
-                            String fi = photoImage.getText();
-                            String[] fileNemeString = fi.split("\\\\");
-                            int lenst = fileNemeString.length;
+                  //  }
+                    //  BufferedImage bufferedImage = null;
+                    try {
+                        BufferedImage bufferedImage = ImageIO.read(new File(photoImage.getText()));
+                        String fi = photoImage.getText();
+                        String[] fileNemeString = fi.split("\\\\");
+                        int lenst = fileNemeString.length;
 // the image is sized and save to file. the file location is provided.
-                            //    Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_FAST);
-                            File saveFile = new File("C:\\church\\" + fileNemeString[lenst-1]);
+                        //    Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_FAST);
+                        File saveFile = new File("C:\\church\\" + fileNemeString[lenst - 1]);
 
-                            ImageIO.write(ImageConversion.convertToBufferedImage(bufferedImage),fileTypes,saveFile);
-                            photoImage.setText("C:\\church\\" + fileNemeString[lenst-1]);
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                        ImageIO.write(ImageConversion.convertToBufferedImage(bufferedImage), fileTypes, saveFile);
+                        photoImage.setText("C:\\church\\" + fileNemeString[lenst - 1]);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "Error Reading File");
+                        throw new RuntimeException(ex);
+                    }
+                    //
 
-                        //
-                        ffield.setText(searchMember.getFirstName());
-                        ffield.setEditable(true);
-                        name1.setText(searchMember.getLastName());
-                        name1.setEditable(true);
-                        sfield.setText(searchMember.getStatus());
-                        sfield.setEditable(true);
-                        Adfield.setText(searchMember.getAddress());
-                        Adfield.setEditable(true);
-                        phoneNum.setText(searchMember.getPhone());
-                        phoneNum.setEditable(true);
-                        sex.setText(searchMember.getSex());
-                        sex.setEditable(true);
-                        datebirth.setText(searchMember.getDateBorn());
-                        datebirth.setEditable(true);
+                        Optional<String> fnameO = Optional.ofNullable(searchMember.getFirstName());
+                        Optional<String> lnameO = Optional.ofNullable(searchMember.getLastName());
+                        Optional<String> statusO = Optional.ofNullable(searchMember.getStatus());
+                        Optional<String> addressO = Optional.ofNullable(searchMember.getAddress());
+                        Optional<String> phoneO = Optional.ofNullable(searchMember.getPhone());
+                        Optional<String> sexsO = Optional.ofNullable(searchMember.getSex());
+                        Optional<String> dateBO = Optional.ofNullable(searchMember.getDateBorn());
+
+                    //
+                    String fname = searchMember.getFirstName();
+                    String lname = searchMember.getLastName();
+                    String status = searchMember.getStatus();
+                    String address = searchMember.getAddress();
+                    String phone = searchMember.getPhone();
+                    String sexs = searchMember.getSex();
+                    String dateB = searchMember.getDateBorn();
+
+                    if ((fname.equalsIgnoreCase("")||fnameO.isEmpty()) && (lname.equalsIgnoreCase("")|| lnameO.isEmpty()) &&
+                            (status.equalsIgnoreCase("")||statusO.isEmpty()) && (address.equalsIgnoreCase("")|| addressO.isEmpty()) &&
+                            (phone.equalsIgnoreCase("")|| phoneO.isEmpty()) && (sexs.equalsIgnoreCase("")||sexsO.isEmpty()) &&
+                            (dateB.equalsIgnoreCase("")||dateBO.isEmpty())) {
+                        SerialMember serialMember = churchService.displayMethod(no);
+                        churchService.updateMemberInfo(serialMember.getId(), serialMember.getAddress(), serialMember.getDateBorn(),
+                                serialMember.getFirstName(), serialMember.getLastName(), serialMember.getStatus(),
+                                serialMember.getPhone(), serialMember.getSex(), serialMember.getMemberPhoto(), no);
                     }
-                    else
-                    {
-                        sfield.setText("");
-                        ffield.setText("");
-                        idfield.setText("");
-                        names.setText("");
-                        name1.setText("");
-                        name2.setText("");
-                        street.setText("");
-                        Adfield.setText("");
-                        phoneNum.setText("");
-                        idNumber.setText("");
-                        datebirth.setText("");
-                        sex.setText("");
-                    }
-                }
-            });
-            submit.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent e)
-                {
-                    churchService.updateMemberInfo(idfield.getText(), Adfield.getText(), datebirth.getText(),
-                            ffield.getText(), name1.getText(), sfield.getText(),
-                            phoneNum.getText(), sex.getText(),photoImage.getText(), idfield.getText());
-                    sfield.setEditable(true);
+                        searchMember = churchService.displayMemberMethod(no);
+                    ffield.setText(searchMember.getFirstName());
                     ffield.setEditable(true);
-                    idfield.setEditable(true);
-                    names.setEditable(true);
+                    name1.setText(searchMember.getLastName());
                     name1.setEditable(true);
-                    name2.setEditable(true);
+                    sfield.setText(searchMember.getStatus());
+                    sfield.setEditable(true);
+                    Adfield.setText(searchMember.getAddress());
                     Adfield.setEditable(true);
+                    phoneNum.setText(searchMember.getPhone());
                     phoneNum.setEditable(true);
-                    idNumber.setEditable(true);
-                    datebirth.setEditable(true);
+                    sex.setText(searchMember.getSex());
                     sex.setEditable(true);
+                    datebirth.setText(searchMember.getDateBorn());
+                    datebirth.setEditable(true);
+                }
+                    else
+                {
                     sfield.setText("");
                     ffield.setText("");
                     idfield.setText("");
@@ -2327,7 +2317,71 @@ class SundayActivityDialog extends JDialog {
                     idNumber.setText("");
                     datebirth.setText("");
                     sex.setText("");
-                    photoImage.setText("");
+                }
+             }
+            });
+            submit.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e) {
+                    String fileTypes = "";
+                    if (searchMember != null) {
+                        photoImage.setText(searchMember.getMemberPhoto());
+                        //
+
+                        if (photoImage.getText().endsWith("jpg")) {
+                            fileTypes = "jpg";
+                        } else if (photoImage.getText().endsWith("jif")) {
+                            fileTypes = "jif";
+                        } else if (photoImage.getText().endsWith("jpeg")) {
+                            fileTypes = "jpeg";
+                        } else if (photoImage.getText().endsWith("png")) {
+                            fileTypes = "png";
+                        }
+
+                        //  BufferedImage bufferedImage = null;
+                        try {
+                            BufferedImage bufferedImage = ImageIO.read(new File(photoImage.getText()));
+                            String fi = photoImage.getText();
+                            String[] fileNemeString = fi.split("\\\\");
+                            int lenst = fileNemeString.length;
+// the image is sized and save to file. the file location is provided.
+                            //    Image images = bufferedImage.getScaledInstance(150, 120, Image.SCALE_FAST);
+                            File saveFile = new File("C:\\church\\" + fileNemeString[lenst - 1]);
+
+                            ImageIO.write(ImageConversion.convertToBufferedImage(bufferedImage), fileTypes, saveFile);
+                            photoImage.setText("C:\\church\\" + fileNemeString[lenst - 1]);
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(null, "Error Reading File");
+                            throw new RuntimeException(ex);
+                        }
+                        churchService.updateMemberInfo(idfield.getText(), Adfield.getText(), datebirth.getText(),
+                                ffield.getText(), name1.getText(), sfield.getText(),
+                                phoneNum.getText(), sex.getText(), photoImage.getText(), idfield.getText());
+                        sfield.setEditable(true);
+                        ffield.setEditable(true);
+                        idfield.setEditable(true);
+                        names.setEditable(true);
+                        name1.setEditable(true);
+                        name2.setEditable(true);
+                        Adfield.setEditable(true);
+                        phoneNum.setEditable(true);
+                        idNumber.setEditable(true);
+                        datebirth.setEditable(true);
+                        sex.setEditable(true);
+                        sfield.setText("");
+                        ffield.setText("");
+                        idfield.setText("");
+                        names.setText("");
+                        name1.setText("");
+                        name2.setText("");
+                        street.setText("");
+                        Adfield.setText("");
+                        phoneNum.setText("");
+                        idNumber.setText("");
+                        datebirth.setText("");
+                        sex.setText("");
+                        photoImage.setText("");
+                    }
                 }
             });
             setSize(700, 300);

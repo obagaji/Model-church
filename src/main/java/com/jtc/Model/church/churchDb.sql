@@ -12,7 +12,6 @@ DROP TABLE IF EXISTS workers_login;
 CREATE TABLE  Member
 (
     id varchar(100) NOT NULL,
-    serial_number INT NOT NULL,
     sex varchar(100),
     last_name varchar(100),
     first_name varchar(100),

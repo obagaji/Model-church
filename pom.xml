@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.jtc</groupId>
 	<artifactId>assimilation-application</artifactId>
-	<version>3.0.1-SNAPSHOT</version>
+	<version>4.0.1-SNAPSHOT</version>
 	<name>assimilation-application</name>
 	<description>operational application for church </description>
 	<properties>
@@ -96,6 +96,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>NCMP assimilation</finalName>
 	</build>
     <distributionManagement>
         <repository>
