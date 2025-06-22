@@ -2278,9 +2278,9 @@ class SundayActivityDialog extends JDialog {
                     String sexs = searchMember.getSex();
                     String dateB = searchMember.getDateBorn();
 
-                    if ((fname.equalsIgnoreCase("")||fnameO.isEmpty()) && (lname.equalsIgnoreCase("")|| lnameO.isEmpty()) &&
-                            (status.equalsIgnoreCase("")||statusO.isEmpty()) && (address.equalsIgnoreCase("")|| addressO.isEmpty()) &&
-                            (phone.equalsIgnoreCase("")|| phoneO.isEmpty()) && (sexs.equalsIgnoreCase("")||sexsO.isEmpty()) &&
+                    if ((fname.equalsIgnoreCase("")||fnameO.isEmpty()) || (lname.equalsIgnoreCase("")|| lnameO.isEmpty()) ||
+                            (status.equalsIgnoreCase("")||statusO.isEmpty()) || (address.equalsIgnoreCase("")|| addressO.isEmpty()) ||
+                            (phone.equalsIgnoreCase("")|| phoneO.isEmpty()) || (sexs.equalsIgnoreCase("")||sexsO.isEmpty()) ||
                             (dateB.equalsIgnoreCase("")||dateBO.isEmpty())) {
                         SerialMember serialMember = churchService.displayMethod(no);
                         churchService.updateMemberInfo(serialMember.getId(), serialMember.getAddress(), serialMember.getDateBorn(),
