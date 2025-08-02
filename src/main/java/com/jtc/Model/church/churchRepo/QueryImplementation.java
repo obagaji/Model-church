@@ -2,6 +2,7 @@
 
 package com.jtc.Model.church.churchRepo;
 
+import com.jtc.Model.church.AtemList;
 import com.jtc.Model.church.churchEntity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -141,6 +142,12 @@ public class QueryImplementation extends AbstractTableModel {
         deleteSerialMemberWithId(id);
         deleteWorkerLogin(id);
         return jdbcTemplate.update(sql,id); //
+    }
+    public int deleteOldData()
+    {
+        String sql = " Delete from member";
+
+        return jdbcTemplate.update(sql );
     }
     public int deleteDateClass(String memberId)
     {
@@ -893,7 +900,6 @@ public List<Member> findAllMemberWithoutSerial()
             rs.getString("resent"), rs.getString("member_photo")));
 }
 
-
     public List<SerialMember> findAllMember()
     {
         String sql = "SELECT serial_number, member_photo, id, sex,last_name ,first_name ,address,date_born,phone,status," +
@@ -908,6 +914,33 @@ public List<Member> findAllMemberWithoutSerial()
 
         return memberList;
     }
+
+    public void reInstallDataBaseTable()
+    {
+        Map<String, SerialMember> copySerialMember= new HashMap<>();
+        Set<String> memberToUpdate = new HashSet<>();
+        List<SerialMember>listmember = findAllMember();
+        // creating an itterator object
+        for (SerialMember mem : listmember) {
+            if (!(copySerialMember.containsKey(mem.getId()))) {
+                copySerialMember.put(mem.getId(), mem);
+            }
+            memberToUpdate.add(mem.getId());
+        }
+        if(memberToUpdate.size()==copySerialMember.size()) {
+            deleteOldData();
+        }
+        for (String string: memberToUpdate)
+        {
+            addMemberInfo(new Member(copySerialMember.get(string).getId(),copySerialMember.get(string).getSex(),
+                    copySerialMember.get(string).getLastName(),copySerialMember.get(string).getFirstName(),
+                    copySerialMember.get(string).getAddress(),copySerialMember.get(string).getDateBorn(),
+                    copySerialMember.get(string).getPhone(),copySerialMember.get(string).getStatus(),
+                    copySerialMember.get(string).getAttendance(),copySerialMember.get(string).getRegisterDate(),
+                    copySerialMember.get(string).getResent(),copySerialMember.get(string).getMemberPhoto()));
+        }
+    }
+
     public List<Member> getBirthDaysWorkerList()
     {
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-YYYY");

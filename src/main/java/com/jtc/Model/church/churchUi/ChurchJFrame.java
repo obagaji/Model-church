@@ -177,10 +177,10 @@ import static java.util.Arrays.stream;
         searchMenu.add(displayBirth);
         searchMenu.addSeparator();
         searchMenu.add(reset);
-      //  searchMenu.addSeparator();
-      //  searchMenu.add(newTable);
-    //    searchMenu.addSeparator();
-    //    searchMenu.add(createNewTableUpdateImage);
+        searchMenu.addSeparator();
+        searchMenu.add(newTable);
+        searchMenu.addSeparator();
+        searchMenu.add(createNewTableUpdateImage);
         searchMenu.addSeparator();
         searchMenu.add(UpdateImageSize);
         searchMenu.addSeparator();
@@ -1389,38 +1389,12 @@ class SundayActivityDialog extends JDialog {
             add(pan, "Center");
 
             delsfield.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    java.util.List<Member> mem = churchService.findAllMemberWithoutSerial();
-                    List<SerialMember> serial = churchService.findAllMember();
-                    Set<SerialMember> memberSet = new HashSet<>();
-                    SerialMember sM = new SerialMember();
-                    Iterator<Member> memberIterator = mem.iterator();
-                    int sizeMember = mem.size();
-                    int number = 1;
-
-                    int serialSize = serial.size();
-                    if (!(serialSize== sizeMember)|| serial.isEmpty()) {
-                        if (!serial.isEmpty())
-                        {
-
-                        }
-                        while (memberIterator.hasNext()) {
-
-                            Member addMember = memberIterator.next();
-                            churchService.newAddMember(addMember);
-                            delSecond.setText("Total Old Table :" + sizeMember + ", Total Inserted  :" + number);
-                            number++;
-
-                        }
-                    }
-                    else {
+                public void actionPerformed(ActionEvent e)
+                {
+                    churchService.reInstallDataBaseTable();
+                    int n = churchService.findAllMemberWithoutSerial().size();
+                            delSecond.setText("Total Old Table : " + n);
                         delsfield.setEnabled(false);
-                    }
-                    if (serial.isEmpty() || serialSize < sizeMember)
-                    {
-                        delsfield.setEnabled(true);
-                    }
-
 
                 }
             });
