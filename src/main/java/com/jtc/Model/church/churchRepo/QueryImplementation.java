@@ -178,12 +178,12 @@ public class QueryImplementation extends AbstractTableModel {
 
     public List<AllWorkIng> getAllWorkers()
     {
-        String sql = " SELECT member.id, member.sex, member.last_name, member.first_name, " +
-                "member.status ,member.address , member.phone ," +
-                " member.attendance ,member.register_date,member.resent,workers.depart_names," +
+        String sql = " SELECT serial_member.id, serial_member.sex, serial_member.last_name, serial_member.first_name, " +
+                "serial_member.status ,serial_member.address , serial_member.phone ," +
+                " serial_member.attendance ,serial_member.register_date,serial_member.resent,workers.depart_names," +
                 "workers.worker_position" +
-                " FROM member " +
-                "INNER JOIN Workers ON workers.worker_Id = member.id";
+                " FROM serial_member " +
+                "INNER JOIN Workers ON workers.worker_Id = serial_member.id";
 
         return jdbcTemplate.query(sql,(rs, rowNum) -> new AllWorkIng(rs.getString("id" ),
                 rs.getString("sex"),rs.getString("last_name"),
@@ -205,8 +205,8 @@ public class QueryImplementation extends AbstractTableModel {
     {
 
         String sql = "SELECT id,sex,last_name,first_name,status,address,phone," +
-                "  attendance ,register_date,resent FROM member" +
-                "  INNER JOIN Non_Worker ON Non_Worker.non_worker_Id = Member.id order by Member.first_name ";
+                "  attendance ,register_date,resent FROM serial_member" +
+                "  INNER JOIN Non_Worker ON Non_Worker.non_worker_Id = serial_Member.id order by serial_Member.first_name ";
    //     try {
 
             return jdbcTemplate.query(sql,(rs, rowNum) -> new NonMember(rs.getString("id" ),
@@ -261,13 +261,13 @@ public class QueryImplementation extends AbstractTableModel {
                 rs.getString("resent"), rs.getString("member_photo")),objects);
     }
 
-    public  List<Member> findByFirstName(String first)
+    public  List<SerialMember> findByFirstName(String first)
     {
-        List<Member> listMember;
+        List<SerialMember> listMember;
 
-        String sql = "SELECT * FROM Member  WHERE first_name = ?";
+        String sql = "SELECT * FROM serial_Member  WHERE first_name = ?";
 
-        listMember = jdbcTemplate.query(sql, (rs, rowNum) -> new Member(rs.getString("id"),
+        listMember = jdbcTemplate.query(sql, (rs, rowNum) -> new SerialMember(rs.getInt("serial_Number"),rs.getString("id"),
                     rs.getString("sex"), rs.getString("last_name"), rs.getString("first_name"), rs.getString("address"),
                     rs.getString("date_born"), rs.getString("phone"), rs.getString("status"),
                     rs.getInt("attendance"), rs.getString("register_date"),
@@ -275,7 +275,7 @@ public class QueryImplementation extends AbstractTableModel {
 
         if (listMember.isEmpty())
         {
-            listMember.add(new Member("No Id","","No Name","No Name","","",
+            listMember.add(new SerialMember(0,"No Id","","No Name","No Name","","",
                          "","",0,"","",""));//, ""));
         }
         return listMember;
@@ -329,7 +329,7 @@ public boolean displaySerialName(String memberId)
     {
         String name = "";
 
-        String sql = "SELECT id From member where member.id = ?";
+        String sql = "SELECT id From serial_member where serial_member.id = ?";
 
         try {
 
@@ -420,9 +420,7 @@ public boolean displaySerialName(String memberId)
         {
             sqlException.printStackTrace();
         }
-
     }
-
     public NonWorker findNonWorkerById(String nonWorkerId)
     {
         String sql = "Select * from non_worker where non_worker_id = ?";
@@ -452,8 +450,8 @@ public boolean displaySerialName(String memberId)
 
         String searchString = formatedDate.substring(0,5);
 
-        String sql = "SELECT last_name,first_name, status, address,phone,date_born FROM member " +
-                "INNER JOIN workers ON workers.worker_Id = member.id AND member.date_born = ? ";
+        String sql = "SELECT last_name,first_name, status, address,phone,date_born FROM serial_member " +
+                "INNER JOIN workers ON workers.worker_Id = serial_member.id AND serial_member.date_born = ? ";
         try {
             setQuery( jdbcTemplate.queryForRowSet(sql,searchString));
         }
@@ -461,25 +459,20 @@ public boolean displaySerialName(String memberId)
         {
             sqlException.printStackTrace();
         }
-
     }
-
-
 /*
 * This method will be called once a member login. The parameters are the  new date and the id login
 * returns an integer to signifys success.
 * */
     public int updateCurrentDateInfo(String member, String id)
     {
-        String sql = "update member set resent = ? where id = ? ";
+        String sql = "update serial_member set resent = ? where id = ? ";
 
         return jdbcTemplate.update(sql,member,id);
     }
-
-
     public void selectInOrOutSunday(String presentOrNot)
     {
-        String sql = "SELECT * from Member  where in_church = ?";
+        String sql = "SELECT * from serial_Member  where in_church = ?";
         String value = presentOrNot.toUpperCase();
         try {
             setQuery( jdbcTemplate.queryForRowSet(sql,value));
@@ -502,7 +495,6 @@ public boolean displaySerialName(String memberId)
         String sql = "UPDATE date_class SET out_church = 'PRESENT'  WHERE idmember = ?";
         return jdbcTemplate.update(sql,name);
     }
-
     public int addDateClass(DateClass dateClass)
     {
         String sql = " INSERT INTO date_class ( idmember, class_date,  out_church)VALUES(?,?,?)";
@@ -515,40 +507,33 @@ public boolean displaySerialName(String memberId)
     }
     public List<DateClass>getAllDateClass()
     {
-
         String sql = "SELECT idmember, class_date, out_church FROM date_class";
 
         return  jdbcTemplate.query(sql,(rs, rowNum) -> new DateClass(
                 rs.getString("idmember"),rs.getString("class_date"),
                 rs.getString("out_church")));
-
     }
-
     public List<InOutSunday> selectOutSunday(String notPresent)
     {
-        String sql = "SELECT Member.id, Member.sex,Member.last_name ,Member.first_name " +
-                ",Member.address,Member.phone,Member.status," +
-                "Member.attendance ,Member.resent FROM Member " +
-                "INNER JOIN date_class ON Member.id = date_class.idmember WHERE out_church = ?";
+        String sql = "SELECT serial_Member.id, serial_Member.sex,serial_Member.last_name ,serial_Member.first_name " +
+                ",serial_Member.address,serial_Member.phone,serial_Member.status," +
+                "serial_Member.attendance ,serial_Member.resent FROM serial_Member " +
+                "INNER JOIN date_class ON serial_Member.id = date_class.idmember WHERE out_church = ?";
         String value = notPresent.toUpperCase();
-
         return  jdbcTemplate.query(sql, (rs, rowNum) -> new InOutSunday(rs.getString("id"),
                     rs.getString("sex"), rs.getString("last_name"), rs.getString("first_name"), rs.getString("address"),
                     rs.getString("phone"),rs.getInt("attendance"),
                     rs.getString("resent")), value);
     }
-
-
-
-    public List<Member> findByIdValue(String id)
+    public List<SerialMember> findByIdValue(String id)
     {
         boolean notTrue = false;
-        List<Member> memberList = new ArrayList<>();
-        List<Member>emptyList = new ArrayList<>();
-        String sql = "SELECT * FROM member WHERE member.id = ?";
+        List<SerialMember> memberList = new ArrayList<>();
+        List<SerialMember>emptyList = new ArrayList<>();
+        String sql = "SELECT * FROM serial_member WHERE serial_member.id = ?";
      //   try {
 
-             memberList= jdbcTemplate.query(sql,(rs, rowNum) -> new Member(rs.getString("id" ),
+             memberList= jdbcTemplate.query(sql,(rs, rowNum) -> new SerialMember(rs.getInt("serial_number"),rs.getString("id" ),
                     rs.getString("sex"),rs.getString("last_name"),
                     rs.getString("first_name"),rs.getString("address"),rs.getString("date_born"),
                     rs.getString("phone"),  rs.getString("status"),
@@ -556,7 +541,7 @@ public boolean displaySerialName(String memberId)
                     rs.getString("resent"),rs.getString("member_photo")),id);
              if (memberList.isEmpty())
              {
-                 memberList.add(new Member("No Id","","No Name","No Name","","",
+                 memberList.add(new SerialMember(00,"No Id","","No Name","No Name","","",
                          "","",0,"","",""));//, ""));
              }
 
@@ -568,7 +553,7 @@ public boolean displaySerialName(String memberId)
         String value = "";
         if(!id.equalsIgnoreCase("")|| id!=null)
         {
-            String sql = "Select attendance from member where id = ?";
+            String sql = "Select attendance from serial_member where id = ?";
             try {
                 value = jdbcTemplate.queryForObject(sql, (rs, numRow) ->
                         new String(rs.getString("attendance")),id);
@@ -638,7 +623,7 @@ public boolean displaySerialName(String memberId)
 
     public String getCurrentDate(String id)
     {
-        String sql = "Select resent from member where id = ?";
+        String sql = "Select resent from serial_member where id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, (rs, numRow) ->
                     new String(rs.getString("resent")), id);
@@ -690,8 +675,6 @@ public boolean displaySerialName(String memberId)
        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
-
-
     // create a new table where you add a new column to the existing table for memebers
     public int newAddMember(Member member)  {
         String sql = " INSERT INTO Serial_Member (serial_number, id,sex,last_name,first_name,address,date_born,phone,status," +
@@ -705,8 +688,6 @@ public boolean displaySerialName(String memberId)
                 ,member.getAddress(),member.getDateBorn(),member.getPhone(),member.getStatus(),
                 member.getAttendance(),member.getRegisterDate(),member.getResent(),member.getMemberPhoto());
     }
-
-
     public int addMemberInfo(Member member)
     {
         String sql = " INSERT INTO member (id,sex,last_name,first_name,address,date_born,phone,status," +
@@ -719,11 +700,9 @@ public boolean displaySerialName(String memberId)
                 ,member.getAddress(),member.getDateBorn(),member.getPhone(),member.getStatus(),
                 member.getAttendance(),member.getRegisterDate(),member.getResent(),member.getMemberPhoto());
     }
-
-
     public void findAllMemberBySex(String sex)
     {
-        String sql = " Select * from member where sex = ?";
+        String sql = " Select * from serial_member where sex = ?";
         try {
             setQuery( jdbcTemplate.queryForRowSet(sql,sex));
         }
@@ -738,7 +717,7 @@ public boolean displaySerialName(String memberId)
 * */
     public int updateAttendance(String useId)
     {
-        String sql = "UPDATE member SET attendance = attendance +1 WHERE id = ?";
+        String sql = "UPDATE serial_member SET attendance = attendance +1 WHERE id = ?";
         return jdbcTemplate.update(sql,useId);
     }
     public int updateAttendanceDate(String useId, String newdate)
@@ -748,8 +727,8 @@ public boolean displaySerialName(String memberId)
     }
     public void marriedSelection(String marriedSingle)
     {
-        String sql = " Select member.last_name, member.first_name, member.status ,member.address , member.phone , +" +
-                " member.register_date from member where status = ?";
+        String sql = " Select serial_member.last_name, serial_member.first_name, serial_member.status ,serial_member.address , serial_member.phone , +" +
+                " serial_member.register_date from serial_member where status = ?";
         try {
             setQuery( jdbcTemplate.queryForRowSet(sql,marriedSingle));
         }
@@ -787,12 +766,10 @@ public boolean displaySerialName(String memberId)
 
     public List<AttendMember> memberAttendanceTime(String searchDate)
     {
-        String sql = "select first_name,last_name,phone,address from member where resent = ?";
-
+        String sql = "select first_name,last_name,phone,address from serial_member where resent = ?";
           return  jdbcTemplate.query(sql,(rs, rowNum) -> new AttendMember(rs.getString("first_name" ),
                     rs.getString("last_name"),rs.getString("phone"),
                     rs.getString("address")),searchDate);
-
     }
     // there is a change of taught here so this method is not being use for now.
     public int updateWorkerAttendance(String loginTime,String useId)
@@ -836,9 +813,8 @@ public boolean displaySerialName(String memberId)
     public List<AllLoginTime> getAllLoginTime()
     {
         String loginDates = loginDate();
-
-        String sql = " SELECT member.last_name, member.first_name, Workers_Login.login_Time,Workers_Login.login_Date FROM member " +
-                "INNER JOIN Workers_Login ON Workers_Login.id = member.id where Workers_Login.login_Date=? order by member.first_name ";
+        String sql = " SELECT serial_member.last_name, serial_member.first_name, Workers_Login.login_Time,Workers_Login.login_Date FROM serial_member " +
+                "INNER JOIN Workers_Login ON Workers_Login.id = serial_member.id where Workers_Login.login_Date=? order by serial_member.first_name ";
         return jdbcTemplate.query(sql,(rs, rowNum) -> new AllLoginTime(rs.getString("last_name" ),
                 rs.getString("first_name"),rs.getString("login_Time"),
                 rs.getString("login_Date")),loginDates);
@@ -859,23 +835,23 @@ public boolean displaySerialName(String memberId)
     // GET ALL THE WORKERS LOGIN TIME
     public List<AllWorkersLogin> getAllWorkersLoginTime()
     {
-        String sql = " SELECT member.last_name, member.first_name,member.address , member.phone ," +
-                " member.attendance ," +
+        String sql = " SELECT serial_member.last_name, serial_member.first_name,serial_member.address , serial_member.phone ," +
+                " serial_member.attendance ," +
                 "Workers_Login.login_Time" +
-                " FROM member " +
-                "INNER JOIN Workers_Login ON Workers_Login.id = member.id WHERE Workers_Login.member_status = 'Worker' AND Workers_Login.login_date=? order by member.first_name";
+                " FROM serial_member " +
+                "INNER JOIN Workers_Login ON Workers_Login.id = serial_member.id WHERE Workers_Login.member_status = 'Worker' AND Workers_Login.login_date=? order by serial_member.first_name";
         return jdbcTemplate.query(sql,(rs, rowNum) -> new AllWorkersLogin(rs.getString("last_name" ),
                 rs.getString("first_name"),rs.getString("address"),
                 rs.getString("phone"),rs.getInt("attendance"),rs.getString("login_Time")),loginDate());
     }
 // GET ALL THE ATTENDANCE OF ALL MEMBERS REGISTERED IN THE DATA BASE, NOT ONLY WORKERS
     public List<AllWorkersLogin> getAllMembersAttendanceTime()
-    {//Workers_Login.member_status = 'NONWORKER' AND
-        String sql = " SELECT DISTINCT member.last_name, member.first_name,member.address , member.phone ," +
-                "member.attendance ," +
+    {
+        String sql = " SELECT  serial_member.last_name, serial_member.first_name,serial_member.address , serial_member.phone ," +
+                "serial_member.attendance ," +
                 "Workers_Login.login_Time" +
-                " FROM member " +
-                "INNER JOIN Workers_Login ON Workers_Login.id = member.id WHERE Workers_Login.login_date=? order by member.first_name";
+                " FROM serial_member " +
+                "INNER JOIN Workers_Login ON Workers_Login.id = serial_member.id WHERE Workers_Login.login_date=? order by serial_member.first_name";
         return jdbcTemplate.query(sql,(rs, rowNum) -> new AllWorkersLogin(rs.getString("last_name" ),
                 rs.getString("first_name"),rs.getString("address"),
                 rs.getString("phone"),rs.getInt("attendance"),rs.getString("login_Time")),loginDate());
@@ -887,17 +863,29 @@ public boolean displaySerialName(String memberId)
        return  jdbcTemplate.update(sql, nowDate);
     }
 //
-public List<Member> findAllMemberWithoutSerial()
+public List<SerialMember> findAllMemberWithoutSerial()
 {
+    String sql = "SELECT serial_number, member_photo, id, sex,last_name ,first_name ,address,date_born,phone,status," +
+            "attendance,register_date,resent FROM Serial_Member";
+
+    List<SerialMember> memberList= jdbcTemplate.query(sql,(rs, rowNum) -> new SerialMember(rs.getInt("serial_number"),rs.getString("id" ),
+            rs.getString("sex"),rs.getString("last_name"),
+            rs.getString("first_name"),rs.getString("address"),rs.getString("date_born"),
+            rs.getString("phone"),  rs.getString("status"),
+            rs.getInt("attendance"), rs.getString("register_date"),
+            rs.getString("resent"), rs.getString("member_photo")));
+
+    return memberList;
+    /*
     String sql = "SELECT   member_photo, id, sex,last_name ,first_name ,address,date_born,phone,status," +
-            "attendance,register_date,resent FROM member";
+            "attendance,register_date,resent FROM serial_member";
 
     return jdbcTemplate.query(sql,(rs, rowNum) -> new Member(rs.getString("id" ),
             rs.getString("sex"),rs.getString("last_name"),
             rs.getString("first_name"),rs.getString("address"),rs.getString("date_born"),
             rs.getString("phone"),  rs.getString("status"),
             rs.getInt("attendance"), rs.getString("register_date"),
-            rs.getString("resent"), rs.getString("member_photo")));
+            rs.getString("resent"), rs.getString("member_photo")));*/
 }
 
     public List<SerialMember> findAllMember()
@@ -920,7 +908,6 @@ public List<Member> findAllMemberWithoutSerial()
         Map<String, SerialMember> copySerialMember= new HashMap<>();
         Set<String> memberToUpdate = new HashSet<>();
         List<SerialMember>listmember = findAllMember();
-        // creating an itterator object
         for (SerialMember mem : listmember) {
             if (!(copySerialMember.containsKey(mem.getId()))) {
                 copySerialMember.put(mem.getId(), mem);
@@ -928,27 +915,28 @@ public List<Member> findAllMemberWithoutSerial()
             memberToUpdate.add(mem.getId());
         }
         if(memberToUpdate.size()==copySerialMember.size()) {
-            deleteOldData();
+            deleteSerialMember();
         }
         for (String string: memberToUpdate)
         {
-            addMemberInfo(new Member(copySerialMember.get(string).getId(),copySerialMember.get(string).getSex(),
+            newAddMember(new Member(copySerialMember.get(string).getId(),copySerialMember.get(string).getSex(),
                     copySerialMember.get(string).getLastName(),copySerialMember.get(string).getFirstName(),
                     copySerialMember.get(string).getAddress(),copySerialMember.get(string).getDateBorn(),
                     copySerialMember.get(string).getPhone(),copySerialMember.get(string).getStatus(),
                     copySerialMember.get(string).getAttendance(),copySerialMember.get(string).getRegisterDate(),
                     copySerialMember.get(string).getResent(),copySerialMember.get(string).getMemberPhoto()));
+
         }
     }
 
-    public List<Member> getBirthDaysWorkerList()
+    public List<SerialMember> getBirthDaysWorkerList()
     {
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-YYYY");
         String formatedDate = dateFormat.format(new Date());
         String searchString = formatedDate.substring(3,5);
-        String sql = "SELECT * FROM member ";
+        String sql = "SELECT * FROM serial_member ";
 
-        List<Member> memberList= jdbcTemplate.query(sql,(rs, rowNum) -> new Member(rs.getString("id" ),
+        List<SerialMember> memberList= jdbcTemplate.query(sql,(rs, rowNum) -> new SerialMember(rs.getInt("serial_number"),rs.getString("id" ),
                 rs.getString("sex"),rs.getString("last_name"),
                 rs.getString("first_name"),rs.getString("address"),rs.getString("date_born"),
                 rs.getString("phone"),  rs.getString("status"),

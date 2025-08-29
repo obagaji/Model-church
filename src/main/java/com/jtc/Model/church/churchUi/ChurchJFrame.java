@@ -414,8 +414,8 @@ import static java.util.Arrays.stream;
     //    welcomeLabel = new JLabel();
     //    welcomeLabel.setBorder(BorderFactory.createTitledBorder(""));
         font = new Font("SansSerif", 2, 18);
-        welcomeLabel.setFont(font);
-        welcomeLabel.setText("                                        \n LECC :      \n LEADING     EDGE      \n   CHRISTAIN     CENTER        ");
+        welcomeLabel.setFont(font);//NEW COVENANT MODEL PARISH
+        welcomeLabel.setText("                                        \n NEW :      \n COVENANT     MODEL      \n   PARISH     RCCG        ");
         add(welcomeLabel, "South");
         add(dONLabel, "Center");
         add(displayL, "North");
@@ -725,7 +725,7 @@ class SundayActivityDialog extends JDialog {
             search.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    List<Member> allMember = churchService.findAllMemberWithoutSerial();
+                    List<SerialMember> allMember = churchService.findAllMemberWithoutSerial();
                     int size = allMember.size();
                     objects = new Object[size][13];
                     columnObject = new String[]{"Serial_Number", "member_photo","id", "sex", "last_name", "first_name", "address", "date_born", "phone", "status",
@@ -811,13 +811,13 @@ class SundayActivityDialog extends JDialog {
             add(pan, "Center");
             add(canc, "South");
             //add(pan2, "South");
-            List<Member> serial = churchService.findAllMemberWithoutSerial();
-            Iterator<Member> memberIterator = serial.iterator();
+            List<SerialMember> serial = churchService.findAllMemberWithoutSerial();
+            Iterator<SerialMember> memberIterator = serial.iterator();
             delsfield.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     String fileType ="";
                     if (memberIterator.hasNext()){
-                        Member ImageMember = memberIterator.next();
+                        SerialMember ImageMember = memberIterator.next();
                         if (ImageMember.getMemberPhoto().endsWith("jpg")) {
                             fileType = "jpg";
                         } else if (ImageMember.getMemberPhoto().endsWith("jif")) {
@@ -852,7 +852,7 @@ class SundayActivityDialog extends JDialog {
                             throw new RuntimeException(ex);
                         }
 /// new addition for picture update
-                        int v = churchService.updateMemberInfo(ImageMember.getId(), ImageMember.getAddress(), ImageMember.getDateBorn(),
+                        int v = churchService.updateSerialMemberInfo(ImageMember.getId(), ImageMember.getAddress(), ImageMember.getDateBorn(),
                                 ImageMember.getFirstName(), ImageMember.getLastName(), ImageMember.getStatus(),
                                 ImageMember.getPhone(), ImageMember.getSex(),
                                 ImageMember.getMemberPhoto(),
@@ -883,7 +883,7 @@ class SundayActivityDialog extends JDialog {
     class LogDialog extends JDialog {
 
         private Timer animationTimer;
-        private Member displayNames;
+        private SerialMember displayNames;
      //   private JLabel welcomeLabel,display1,display2,display3,dONLabel,label;
 
         private JTextField lofield;
@@ -939,7 +939,7 @@ class SundayActivityDialog extends JDialog {
 
                         if (churchService.displayName(name)) {
 
-                            List<Member> checkMember = new ArrayList<>();
+                            List<SerialMember> checkMember = new ArrayList<>();
                             checkMember = churchService.findByIdValue(name);
                             if (churchService.getCurrentDate(name).equalsIgnoreCase(dateString)) {
                                 JOptionPane.showMessageDialog(null, "You have Logged In Before");
@@ -1011,7 +1011,7 @@ class SundayActivityDialog extends JDialog {
                         try {
                             if (churchService.displayName(name)) {
 
-                                List<Member> checkMember = new ArrayList<>();
+                                List<SerialMember> checkMember = new ArrayList<>();
                                 checkMember = churchService.findByIdValue(name);
                                 if (churchService.getCurrentDate(name).equalsIgnoreCase(dateString)) {
                                     JOptionPane.showMessageDialog(null, "You have Logged In Before");
@@ -1301,9 +1301,9 @@ class SundayActivityDialog extends JDialog {
             total.add(panel, "South");
             add(total, "South");
             submit.addActionListener(new ActionListener() {
-                Member idMember ;
+                SerialMember idMember ;
                 public void actionPerformed(ActionEvent e) {
-                    List<Member> searchMember = new ArrayList<>();
+                    List<SerialMember> searchMember = new ArrayList<>();
 
                     if (enterId.getText().equalsIgnoreCase("") &&
                             (firstField.getText() != null && !firstField.getText().equalsIgnoreCase("")) ) {
@@ -1312,7 +1312,7 @@ class SundayActivityDialog extends JDialog {
 
                     } else if ((firstField.getText()).isEmpty() && !(enterId.getText()).isEmpty()) {
 
-                        idMember = churchService.displayMemberMethod(enterId.getText());
+                        idMember = churchService.displayMethod(enterId.getText());
 
 
                     }
@@ -1872,7 +1872,7 @@ class SundayActivityDialog extends JDialog {
         private JButton printNumber;
         private Object[][] objects;
         private String [] columnObject;
-        private List<Member> birthDayList;
+        private List<SerialMember> birthDayList;
         private JTable resultTable;
         private CreatePhoneTxtClass createPhoneTxtClass;
 
@@ -1922,7 +1922,7 @@ class SundayActivityDialog extends JDialog {
             printNumber.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event) {
                     List<String> stringList = new ArrayList<>();
-                    List<Member> list = new ArrayList<>();
+                    List<SerialMember> list = new ArrayList<>();
                     String[] birthArray = new String[list.size()];
                     list = churchService.getBirthDaysWorkerList();
                     for (int x = 0; x < list.size(); x++) {
@@ -2070,7 +2070,7 @@ class SundayActivityDialog extends JDialog {
     class EditDialog extends JDialog {
 
         private JButton searchButton;
-        private Member searchMember;
+        private SerialMember searchMember;
         private JPanel enter = new JPanel();
         private JPanel panel = new JPanel();
         private JTextField name1,sfield, ffield,name2, Adfield,idNumber,photoImage,
@@ -2202,7 +2202,7 @@ class SundayActivityDialog extends JDialog {
                 public void actionPerformed(ActionEvent event) {
                     String no = idfield.getText();
                     String fileTypes = "";
-                    searchMember = churchService.displayMemberMethod(no);
+                    searchMember = churchService.displayMethod(no);
                     if (searchMember != null) {
                         photoImage.setText(searchMember.getMemberPhoto());
                         //
@@ -2257,11 +2257,11 @@ class SundayActivityDialog extends JDialog {
                             (phone.equalsIgnoreCase("")|| phoneO.isEmpty()) || (sexs.equalsIgnoreCase("")||sexsO.isEmpty()) ||
                             (dateB.equalsIgnoreCase("")||dateBO.isEmpty())) {
                         SerialMember serialMember = churchService.displayMethod(no);
-                        churchService.updateMemberInfo(serialMember.getId(), serialMember.getAddress(), serialMember.getDateBorn(),
+                        churchService.updateSerialMemberInfo(serialMember.getId(), serialMember.getAddress(), serialMember.getDateBorn(),
                                 serialMember.getFirstName(), serialMember.getLastName(), serialMember.getStatus(),
                                 serialMember.getPhone(), serialMember.getSex(), serialMember.getMemberPhoto(), no);
                     }
-                        searchMember = churchService.displayMemberMethod(no);
+                        searchMember = churchService.displayMethod(no);
                     ffield.setText(searchMember.getFirstName());
                     ffield.setEditable(true);
                     name1.setText(searchMember.getLastName());
@@ -2328,7 +2328,7 @@ class SundayActivityDialog extends JDialog {
                             JOptionPane.showMessageDialog(null, "Error Reading File");
                             throw new RuntimeException(ex);
                         }
-                        churchService.updateMemberInfo(idfield.getText(), Adfield.getText(), datebirth.getText(),
+                        churchService.updateSerialMemberInfo(idfield.getText(), Adfield.getText(), datebirth.getText(),
                                 ffield.getText(), name1.getText(), sfield.getText(),
                                 phoneNum.getText(), sex.getText(), photoImage.getText(), idfield.getText());
                         sfield.setEditable(true);

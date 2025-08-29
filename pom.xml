@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.jtc</groupId>
 	<artifactId>assimilation-application</artifactId>
-	<version>6.0.1-SNAPSHOT</version>
+	<version>7.0.2-SNAPSHOT</version>
 	<name>assimilation-application</name>
 	<description>operational application for church </description>
 	<properties>
@@ -37,11 +37,6 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
